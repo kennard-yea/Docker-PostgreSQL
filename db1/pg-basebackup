@@ -1,0 +1,31 @@
+#!/bin/bash
+
+for file in $(ls ${PGLIB}/*); do source ${file}; done # Import library functions and aliases
+test_libsource || echo "Library import failed! Please check!" && exit 1
+
+# Postgres-general environment variables
+export PGHOST="localhost"
+export PGPORT="5432"
+export PGDATABASE="postgres"
+export PGUSER="postgres"
+export PGPASSFILE="/var/lib/postgresql/.pgpass"
+
+# Script-specific environment variables
+export BBU_PGVERSION="$(get_pgversion)"
+export BBU_PGCLUSTER="$(get_pgclustername)"
+export BBU_PGBKUPDIR="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
+export BBU_PGWALARCHDIR="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
+
+function check_environment()
+{
+    
+}
+
+function initialize_backupdirs()
+{
+    local returncode=0
+
+
+    
+    return ${returncode}
+}

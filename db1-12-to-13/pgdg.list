@@ -1,0 +1,2 @@
+deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main 13
+deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main 12

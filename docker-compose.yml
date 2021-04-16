@@ -1,0 +1,45 @@
+services: 
+    db1:
+        build: 
+            context: ./db1
+            dockerfile: db1.dockerfile
+        environment: 
+            POSTGRES_PASSWORD: riUXVtL4eAwB7Yse8y
+            POSTGRES_USER: postgres
+            POSTGRES_DB: postgres
+            PGDATA: /var/lib/postgresql/data
+            PGPORT: 5432
+            PGLIB: /var/lib/postgresql/lib/
+        networks: 
+            db-net:
+                aliases:
+                    - pgdb1
+        volumes:
+            - type: volume
+              source: db1-data-vol-v13
+              target: /var/lib/postgresql/data
+            - type: volume
+              source: db1-backup-vol
+              target: /var/lib/postgresql/backup
+    pgadmin:
+        image: dpage/pgadmin4
+        environment: 
+            PGADMIN_DEFAULT_EMAIL: chrismdollinger@gmail.com
+            PGADMIN_DEFAULT_PASSWORD: w6yDQdCDfm8MmttbMe99F
+        networks: 
+            db-net:
+                aliases: 
+                    - pgadmin
+        ports: 
+            - "8080:80"
+        volumes: 
+            - type: volume
+              source: pgadmin-vol
+              target: /var/lib/pgadmin
+
+volumes:
+    db1-data-vol-v13:
+    db1-backup-vol:
+    pgadmin-vol:
+networks: 
+    db-net:
