@@ -15,6 +15,7 @@ export BBU_PGVERSION="$(get_pgversion)"
 export BBU_PGCLUSTER="$(get_pgclustername)"
 export BBU_PGBKUPDIR="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
 export BBU_PGWALARCHDIR="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
+export BBU_SUPPORTEDPGVERSIONS=("13" "12" "11" "10" "9.6")
 
 function check_environment()
 {

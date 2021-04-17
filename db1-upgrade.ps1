@@ -8,9 +8,9 @@ docker run --rm `
     --env POSTGRES_USER=postgres `
     --env POSTGRES_DB=postgres `
     --env PGDATA=/var/lib/postgresql/data `
-    --volumes-from postgresql_db1_1 `
-    --mount type=volume,source=postgresql_db1-data-vol-v12,target=/var/lib/postgresql/12/data `
-    --mount type=volume,source=postgresql_db1-data-vol-v13,target=/var/lib/postgresql/data `
+    --volumes-from docker-postgresql_db1_1 `
+    --mount type=volume,source=docker-postgresql_db1-data-vol-v12,target=/var/lib/postgresql/12/data `
+    --mount type=volume,source=docker-postgresql_db1-data-vol-v13,target=/var/lib/postgresql/data `
     --user postgres `
     --workdir /tmp/ `
     db1-12-to-13:upgrade `
@@ -27,9 +27,9 @@ docker run --rm `
     --env POSTGRES_USER=postgres `
     --env POSTGRES_DB=postgres `
     --env PGDATA=/var/lib/postgresql/data `
-    --volumes-from postgresql_db1_1 `
-    --mount type=volume,source=postgresql_db1-data-vol-v12,target=/var/lib/postgresql/12/data `
-    --mount type=volume,source=postgresql_db1-data-vol-v13,target=/var/lib/postgresql/data `
+    --volumes-from docker-postgresql_db1_1 `
+    --mount type=volume,source=docker-postgresql_db1-data-vol-v12,target=/var/lib/postgresql/12/data `
+    --mount type=volume,source=docker-postgresql_db1-data-vol-v13,target=/var/lib/postgresql/data `
     --user postgres `
     --workdir /tmp/ `
     db1-12-to-13:upgrade `
