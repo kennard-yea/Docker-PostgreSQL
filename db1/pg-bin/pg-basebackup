@@ -1,7 +1,10 @@
 #!/bin/bash
+#
+# Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
+#
 
 for file in $(ls ${PGLIB}/*); do source ${file}; done # Import library functions and aliases
-test_libsource || echo "Library import failed! Please check!" && exit 1
+test_libsource || echo "Library import failed! Please check!" 1>&2 && exit 1
 
 # Postgres-general environment variables
 export PGHOST="localhost"
