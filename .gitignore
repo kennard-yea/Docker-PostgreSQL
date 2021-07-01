@@ -1,2 +1,4 @@
-db1/.pgpass
 .gitconfig
+.pgpass
+.postgres_password
+pgadmin.env
