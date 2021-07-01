@@ -1,7 +1,7 @@
 version: "3.9"
 services:
     db1:
-        image: docker-postgresql_db1
+        image: internal/db1
         environment:
             POSTGRES_PASSWORD: riUXVtL4eAwB7Yse8y
             POSTGRES_USER: postgres
