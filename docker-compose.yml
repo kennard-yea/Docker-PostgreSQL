@@ -3,7 +3,7 @@ services:
     db1:
         image: internal/db1
         environment:
-            POSTGRES_PASSWORD: riUXVtL4eAwB7Yse8y
+            POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password_file
             POSTGRES_USER: postgres
             POSTGRES_DB: postgres
             PGDATA: /var/lib/postgresql/data
@@ -20,11 +20,11 @@ services:
             - type: volume
               source: db1-backup-vol
               target: /var/lib/postgresql/backup
+        secrets:
+            - postgres_password_file
     pgadmin:
         image: dpage/pgadmin4
-        environment:
-            PGADMIN_DEFAULT_EMAIL: chrismdollinger@gmail.com
-            PGADMIN_DEFAULT_PASSWORD: w6yDQdCDfm8MmttbMe99F
+        env_file: ./pgadmin/pgadmin.env
         networks:
             db-net:
                 aliases:
@@ -42,3 +42,6 @@ volumes:
     pgadmin-vol:
 networks:
     db-net:
+secrets:
+    postgres_password_file:
+        file: ./db1/.postgres_password
