@@ -16,3 +16,10 @@ docker stack deploy --compose-file=docker-compose.yml pgdb-stack
 ```sh
 docker stack rm pgdb-stack
 ```
+
+## Run bash image
+
+```sh
+docker image build --tag internal/bash-pgscripts bash-pgscripts
+docker run -it --rm --network pgdb-stack_db-net --network-alias bash-manager internal/bash-pgscripts
+```

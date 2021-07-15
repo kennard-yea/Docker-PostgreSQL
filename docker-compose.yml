@@ -38,6 +38,8 @@ volumes:
     pgadmin-vol:
 networks:
     db-net:
+        driver: overlay
+        attachable: true
 secrets:
     postgres_password_file:
         file: ./db1/.postgres_password
