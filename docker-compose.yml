@@ -17,9 +17,6 @@ services:
             - type: volume
               source: db1-data-vol-v13
               target: /var/lib/postgresql/data
-            - type: volume
-              source: db1-backup-vol
-              target: /var/lib/postgresql/backup
         secrets:
             - postgres_password_file
     pgadmin:
@@ -38,10 +35,11 @@ services:
 
 volumes:
     db1-data-vol-v13:
-    db1-backup-vol:
     pgadmin-vol:
 networks:
     db-net:
+        driver: overlay
+        attachable: true
 secrets:
     postgres_password_file:
         file: ./db1/.postgres_password
