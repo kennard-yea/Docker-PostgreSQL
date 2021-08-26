@@ -3,7 +3,7 @@ services:
     db1:
         image: internal/db1
         environment:
-            POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password_file
+            POSTGRES_PASSWORD_FILE: /run/secrets/db1_password_file
             POSTGRES_USER: postgres
             POSTGRES_DB: postgres
             PGDATA: /var/lib/postgresql/data
@@ -18,7 +18,26 @@ services:
               source: db1-data-vol-v13
               target: /var/lib/postgresql/data
         secrets:
-            - postgres_password_file
+            - db1_password_file
+    db3:
+        image: internal/db3
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/db3_password_file
+            POSTGRES_USER: postgres
+            POSTGRES_DB: postgres
+            PGDATA: /var/lib/postgresql/data
+            PGPORT: 5432
+            PGLIB: /var/lib/postgresql/lib/
+        networks:
+            db-net:
+                aliases:
+                    - pgdb3
+        volumes:
+            - type: volume
+              source: db3-data-vol-v13
+              target: /var/lib/postgresql/data
+        secrets:
+            - db3_password_file
     pgadmin:
         image: dpage/pgadmin4
         env_file: ./pgadmin/pgadmin.env
@@ -35,11 +54,14 @@ services:
 
 volumes:
     db1-data-vol-v13:
+    db3-data-vol-v13:
     pgadmin-vol:
 networks:
     db-net:
         driver: overlay
         attachable: true
 secrets:
-    postgres_password_file:
+    db1_password_file:
         file: ./db1/.postgres_password
+    db3_password_file:
+        file: ./db3/.postgres_password
