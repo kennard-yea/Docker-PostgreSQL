@@ -39,7 +39,7 @@ services:
         secrets:
             - db3_password_file
     pgadmin:
-        image: dpage/pgadmin4
+        image: internal/pgadmin
         env_file: ./pgadmin/pgadmin.env
         networks:
             db-net:
@@ -47,15 +47,10 @@ services:
                     - pgadmin
         ports:
             - "8080:80"
-        volumes:
-            - type: volume
-              source: pgadmin-vol
-              target: /var/lib/pgadmin
 
 volumes:
     db1-data-vol-v13:
     db3-data-vol-v13:
-    pgadmin-vol:
 networks:
     db-net:
         driver: overlay
