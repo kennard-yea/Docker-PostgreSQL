@@ -1,4 +1,5 @@
 .gitconfig
 .pgpass
 .postgres_password
+.pgbench_password
 pgadmin.env

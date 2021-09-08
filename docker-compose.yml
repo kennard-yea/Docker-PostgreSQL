@@ -9,6 +9,10 @@ services:
             PGDATA: /var/lib/postgresql/data
             PGPORT: 5432
             PGLIB: /var/lib/postgresql/lib/
+            PGBENCH_PASSWORD_FILE: /run/secrets/db1_pgbench_password_file
+            PGBENCH_USER: pgbench
+            PGBENCH_DB: pgbench
+            PGBENCH_SCALE: 10
         networks:
             db-net:
                 aliases:
@@ -19,6 +23,7 @@ services:
               target: /var/lib/postgresql/data
         secrets:
             - db1_password_file
+            - db1_pgbench_password_file
     db3:
         image: internal/db3
         environment:
@@ -60,3 +65,5 @@ secrets:
         file: ./db1/.postgres_password
     db3_password_file:
         file: ./db3/.postgres_password
+    db1_pgbench_password_file:
+        file: ./db1/.pgbench_password
