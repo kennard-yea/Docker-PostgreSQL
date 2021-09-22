@@ -4,6 +4,18 @@ Personal playground using Docker, primarily for playing with PostgreSQL scripts 
 
 ## HOWTO
 
+### Supply hidden files
+
+Create the below files and populate them with the appropriate contents
+
+```list
+db1/.pgpass - pgpass file for db1 image. Contains password entries for all users across all databases
+db1/.postgres_password - password file for generating the db1 postgres user
+db1/.pgbench_password - password file for generating the db1 pgbench user
+db1/.pgpass - pgpass file for db3 image - identical to db1/.pgpass
+db3/.postgres_password - password file for generating the db3 postgres user
+```
+
 ### Create stack (requires building db1 image then deploying stack)
 
 ```sh
