@@ -8,7 +8,6 @@ services:
             POSTGRES_DB: postgres
             PGDATA: /var/lib/postgresql/data
             PGPORT: 5432
-            PGLIB: /var/lib/postgresql/lib/
             PGBENCH_PASSWORD_FILE: /run/secrets/db1_pgbench_password_file
             PGBENCH_USER: pgbench
             PGBENCH_DB: pgbench
@@ -17,6 +16,8 @@ services:
             db-net:
                 aliases:
                     - pgdb1
+        ports:
+            - "15432":"5432"
         volumes:
             - type: volume
               source: db1-data-vol-v13
@@ -37,21 +38,14 @@ services:
             db-net:
                 aliases:
                     - pgdb3
+        ports:
+            - "35432":"5432"
         volumes:
             - type: volume
               source: db3-data-vol-v13
               target: /var/lib/postgresql/data
         secrets:
             - db3_password_file
-    pgadmin:
-        image: internal/pgadmin
-        env_file: ./pgadmin/pgadmin.env
-        networks:
-            db-net:
-                aliases:
-                    - pgadmin
-        ports:
-            - "8080:80"
 
 volumes:
     db1-data-vol-v13:
