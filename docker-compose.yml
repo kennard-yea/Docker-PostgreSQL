@@ -3,7 +3,7 @@ services:
     db1:
         image: internal/db1
         environment:
-            POSTGRES_PASSWORD_FILE: /run/secrets/db1_password_file
+            POSTGRES_PASSWORD_FILE: /run/secrets/db1_postgres_password_file
             POSTGRES_USER: postgres
             POSTGRES_DB: postgres
             PGDATA: /var/lib/postgresql/data
@@ -17,18 +17,21 @@ services:
                 aliases:
                     - pgdb1
         ports:
-            - "15432":"5432"
+            - target: 5432
+              published: 15432
+              protocol: tcp
+              mode: host
         volumes:
             - type: volume
               source: db1-data-vol-v13
               target: /var/lib/postgresql/data
         secrets:
-            - db1_password_file
+            - db1_postgres_password_file
             - db1_pgbench_password_file
     db3:
         image: internal/db3
         environment:
-            POSTGRES_PASSWORD_FILE: /run/secrets/db3_password_file
+            POSTGRES_PASSWORD_FILE: /run/secrets/db3_postgres_password_file
             POSTGRES_USER: postgres
             POSTGRES_DB: postgres
             PGDATA: /var/lib/postgresql/data
@@ -39,13 +42,17 @@ services:
                 aliases:
                     - pgdb3
         ports:
-            - "35432":"5432"
+            - target: 5432
+              published: 35432
+              protocol: tcp
+              mode: host
         volumes:
             - type: volume
               source: db3-data-vol-v13
               target: /var/lib/postgresql/data
         secrets:
-            - db3_password_file
+            - db3_postgres_password_file
+            - db3_pgbench_password_file
 
 volumes:
     db1-data-vol-v13:
@@ -55,9 +62,11 @@ networks:
         driver: overlay
         attachable: true
 secrets:
-    db1_password_file:
+    db1_postgres_password_file:
         file: ./db1/.postgres_password
-    db3_password_file:
+    db3_postgres_password_file:
         file: ./db3/.postgres_password
     db1_pgbench_password_file:
         file: ./db1/.pgbench_password
+    db3_pgbench_password_file:
+        file: ./db3/.pgbench_password
