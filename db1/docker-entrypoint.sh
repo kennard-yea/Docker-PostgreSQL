@@ -88,9 +88,7 @@ docker_init_database_dir() {
 		set -- --waldir "$POSTGRES_INITDB_WALDIR" "$@"
 	fi
 
-	# eval 'initdb --username="$POSTGRES_USER" --pwfile=<(echo "$POSTGRES_PASSWORD") '"$POSTGRES_INITDB_ARGS"' "$@"'
-	rm -rf "$PGDATA/*" "$POSTGRES_INITDB_WALDIR/*"
-	eval 'pg_basebackup --dbname="host=$POSTGRES_PRIMARY_HOST user=$POSTGRES_USER port=$PGPORT dbname=$POSTGRES_DB passfile=/var/lib/postgresql/.pgpass" --pgdata="$PGDATA" --write-recovery-conf --wal-method=stream --checkpoint=fast "$@"'
+	eval 'initdb --username="$POSTGRES_USER" --pwfile=<(echo "$POSTGRES_PASSWORD") '"$POSTGRES_INITDB_ARGS"' "$@"'
 
 	# unset/cleanup "nss_wrapper" bits
 	if [ "${LD_PRELOAD:-}" = '/usr/lib/libnss_wrapper.so' ]; then
@@ -118,21 +116,21 @@ docker_verify_minimum_env() {
 
 		EOWARN
 	fi
-	# if [ -z "$POSTGRES_PASSWORD" ] && [ 'trust' != "$POSTGRES_HOST_AUTH_METHOD" ]; then
-	# 	# The - option suppresses leading tabs but *not* spaces. :)
-	# 	cat >&2 <<-'EOE'
-	# 		Error: Database is uninitialized and superuser password is not specified.
-	# 		       You must specify POSTGRES_PASSWORD to a non-empty value for the
-	# 		       superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
+	if [ -z "$POSTGRES_PASSWORD" ] && [ 'trust' != "$POSTGRES_HOST_AUTH_METHOD" ]; then
+		# The - option suppresses leading tabs but *not* spaces. :)
+		cat >&2 <<-'EOE'
+			Error: Database is uninitialized and superuser password is not specified.
+			       You must specify POSTGRES_PASSWORD to a non-empty value for the
+			       superuser. For example, "-e POSTGRES_PASSWORD=password" on "docker run".
 
-	# 		       You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
-	# 		       connections without a password. This is *not* recommended.
+			       You may also use "POSTGRES_HOST_AUTH_METHOD=trust" to allow all
+			       connections without a password. This is *not* recommended.
 
-	# 		       See PostgreSQL documentation about "trust":
-	# 		       https://www.postgresql.org/docs/current/auth-trust.html
-	# 	EOE
-	# 	exit 1
-	# fi
+			       See PostgreSQL documentation about "trust":
+			       https://www.postgresql.org/docs/current/auth-trust.html
+		EOE
+		exit 1
+	fi
 	if [ 'trust' = "$POSTGRES_HOST_AUTH_METHOD" ]; then
 		cat >&2 <<-'EOWARN'
 			********************************************************************************
@@ -226,8 +224,8 @@ docker_setup_env() {
 	: "${POSTGRES_HOST_AUTH_METHOD:=md5}"
 
 	declare -g DATABASE_ALREADY_EXISTS
-	# look specifically for standby.signal, as it is expected in the replica DB dir
-	if [ -a "$PGDATA/standby.signal" ] || [ -s "$PGDATA/recovery.conf" ]; then
+	# look specifically for PG_VERSION, as it is expected in the DB dir
+	if [ -s "$PGDATA/PG_VERSION" ]; then
 		DATABASE_ALREADY_EXISTS='true'
 	fi
 }
@@ -307,14 +305,15 @@ _main() {
 			ls /docker-entrypoint-initdb.d/ > /dev/null
 
 			docker_init_database_dir
-			# pg_setup_hba_conf
+			pg_setup_hba_conf
+      mv /etc/postgresql/* $PGDATA/ # set any custom configurations
 
 			# PGPASSWORD is required for psql when authentication is required for 'local' connections via pg_hba.conf and is otherwise harmless
 			# e.g. when '--auth=md5' or '--auth-local=md5' is used in POSTGRES_INITDB_ARGS
 			export PGPASSWORD="${PGPASSWORD:-$POSTGRES_PASSWORD}"
 			docker_temp_server_start "$@"
 
-			# docker_setup_db
+			docker_setup_db
 			docker_process_init_files /docker-entrypoint-initdb.d/*
 
 			docker_temp_server_stop
