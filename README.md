@@ -12,12 +12,13 @@ Create the below files and populate them with the appropriate contents
 .\db1\.pgpass - pgpass file for db1 image. Contains password entries for all users across all databases
 .\db1\.postgres_password - password file for generating the db1 postgres user
 .\db1\.pgbench_password - password file for generating the db1 pgbench user
-.\db1\.pgpass - pgpass file for db3 image - identical to db1/.pgpass
+.\db2\.pgpass - pgpass file for db2 image. Identical to db1/.pgpass
+.\db3\.pgpass - pgpass file for db3 image. Identical to db1/.pgpass
 .\db3\.postgres_password - password file for generating the db3 postgres user
 .\db3\.pgbench_password - password file for generating the db3 pgbench user
 ```
 
-``PowerShell
+```PowerShell
 $db1_postgres_pass="****************"
 $db1_pgbench_pass="****************"
 $db3_pgbench_pass="****************"
@@ -30,19 +31,20 @@ echo "$db3_postgres_pass" > .\db3\.postgres_password
 echo "$db3_pgbench_pass" > .\db3\.pgbench_password
 
 echo "pgdb1:5432:*:postgres:$db1_postgres_pass
+    pgdb2:5432:*:postgres:$db1_postgres_pass
     pgdb3:5432:*:postgres:$db3_postgres_pass
     pgdb1:5432:*:pgbench:$db1_pgbench_pass
+    pgdb2:5432:*:pgbench:$db1_pgbench_pass
     pgdb3:5432:*:pgbench:$db3_pgbench_pass" > .\db1\.pgpass
-echo "pgdb1:5432:*:postgres:$db1_postgres_pass
-    pgdb3:5432:*:postgres:$db3_postgres_pass
-    pgdb1:5432:*:pgbench:$db1_pgbench_pass
-    pgdb3:5432:*:pgbench:$db3_pgbench_pass" > .\db3\.pgpass
-``
+Copy-Item -Path .\db1\.pgpass -Destination .\db2\.pgpass
+Copy-Item -Path .\db1\.pgpass -Destination .\db3\.pgpass
+```
 
 ### Create stack (requires building db1 image then deploying stack)
 
 ```sh
 docker image build --tag internal/db1 db1
+docker image build --tag internal/db2 db2
 docker image build --tag internal/db3 db3
 docker stack deploy --compose-file=docker-compose.yml pgdb-stack
 ```
