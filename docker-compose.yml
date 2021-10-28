@@ -1,5 +1,22 @@
 version: "3.9"
 services:
+    pgadmin:
+        image: internal/pgadmin
+        env_file:
+            - pgadmin/pgadmin.env
+        networks:
+            db-net:
+                aliases:
+                    - pgadmin
+        ports:
+            - target: 80
+              published: 8080
+              protocol: tcp
+              mode: host
+        volumes:
+            - type: volume
+              source: pgadmin-vol
+              target: /var/lib/pgadmin
     db1:
         image: internal/db1
         environment:
@@ -81,6 +98,7 @@ volumes:
     db1-data-vol-v13:
     db2-data-vol-v13:
     db3-data-vol-v13:
+    pgadmin-vol:
 networks:
     db-net:
         driver: overlay
