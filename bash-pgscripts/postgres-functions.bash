@@ -67,7 +67,7 @@ function get_pgclustername()
       case ${pg_version} in
       "13" | "12" | "11" | "10" | "9.6" | "9.5")
         # if cluster_name is null, then use main, else use cluster_name
-        [[ $($psql_noalign --command="show cluster_name") == "" ]] && \
+        [[ $($psql_noalign --dbname="${dbname}" --command="show cluster_name") == "" ]] && \
           echo "main" || \
           ${psql_noalign} --dbname="${dbname}" --command="show cluster_name" | \
           sed "s:\/:\-:g"
