@@ -33,11 +33,6 @@ services:
             db-net:
                 aliases:
                     - pgdb1
-        ports:
-            - target: 5432
-              published: 15432
-              protocol: tcp
-              mode: host
         volumes:
             - type: volume
               source: db1-data-vol-v13
@@ -59,11 +54,6 @@ services:
             db-net:
                 aliases:
                     - pgdb2
-        ports:
-            - target: 5432
-              published: 25432
-              protocol: tcp
-              mode: host
         volumes:
             - type: volume
               source: db2-data-vol-v13
@@ -81,11 +71,6 @@ services:
             db-net:
                 aliases:
                     - pgdb3
-        ports:
-            - target: 5432
-              published: 35432
-              protocol: tcp
-              mode: host
         volumes:
             - type: volume
               source: db3-data-vol-v13

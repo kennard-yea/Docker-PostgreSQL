@@ -18,7 +18,7 @@ Create the below files and populate them with the appropriate contents
 ./db3/.pgbench_password - password file for generating the db3 pgbench user
 ```
 
-```PowerShell
+```shell
 $db1_postgres_pass="****************"
 $db1_pgbench_pass="****************"
 $db3_pgbench_pass="****************"
