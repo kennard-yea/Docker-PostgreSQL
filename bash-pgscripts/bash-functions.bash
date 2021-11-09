@@ -15,3 +15,13 @@ function test_libsource()
 {
   return 0
 }
+
+function time_command()
+{
+  function time_command_usage()
+  {
+    echo "time_command [<command>] [<command parameters>]" 1>&2
+    return 0
+  }
+  return 0
+}
