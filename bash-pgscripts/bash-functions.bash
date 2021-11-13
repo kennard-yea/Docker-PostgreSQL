@@ -32,7 +32,7 @@ function time_command()
   }
 
   start_date="$(date +%s)"
-  $@
+  eval $@
   return_code="$?"
   elapsed_seconds="$(( $(date +%s) - ${start_date} ))"
   elapsed_minutes="$(( ${elapsed_seconds} / 60 ))" && elapsed_seconds="$(( ${elapsed_seconds} % 60 ))"
