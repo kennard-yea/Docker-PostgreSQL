@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 RUN apt update
 RUN apt install -y wget gnupg gnupg2 gnupg1
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(grep "VERSION_CODENAME" /etc/os-release | cut -d"=" -f2)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'

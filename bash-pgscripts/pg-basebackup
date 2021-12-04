@@ -3,7 +3,7 @@
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
 
-for file in $(ls ${PGLIB}/*); do source ${file}; done # Import library functions and aliases
+for file in $(ls /var/lib/postgresql/*); do source ${file}; done # Import library functions and aliases
 test_libsource || echo "Library import failed! Please check!" 1>&2 && exit 1
 
 # Postgres-general environment variables
@@ -13,23 +13,30 @@ export PGDATABASE="postgres"
 export PGUSER="postgres"
 export PGPASSFILE="/var/lib/postgresql/.pgpass"
 
-# Script-specific environment variables
-export BBU_PGVERSION="$(get_pgversion)"
-export BBU_PGCLUSTER="$(get_pgclustername)"
-export BBU_PGBKUPDIR="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
-export BBU_PGWALARCHDIR="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
-export BBU_SUPPORTEDPGVERSIONS=("13" "12" "11" "10" "9.6")
+# Script-specific global defaults
+readonly _pgsbkupdir="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
+readonly _pgswalarchdir="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
+readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
+
+function usage()
+{
+    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir]
+    " 1>&2
+    exit 1
+}
 
 function check_environment()
 {
-    
+    _pgsversion="$(get_pgversion)"
+    _pgscluster="$(get_pgclustername)"
+
+    return 0
 }
 
 function initialize_backupdirs()
 {
     local returncode=0
-
-
-    
+    mkdir -p _pgsbkupdir || returncode=$(( ${returncode} + 1 ))
+    mkdir -p _pgswalarchdir || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
 }
