@@ -3,15 +3,16 @@
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
 
-for file in $(ls /var/lib/postgresql/*); do source ${file}; done # Import library functions and aliases
-test_libsource || echo "Library import failed! Please check!" 1>&2 && exit 1
+for file in $(ls /var/lib/postgresql/lib/*); do source ${file}; done # Import library functions and aliases
+test_libsource || echo "Library import failed! Please check!" 1>&2 # && exit 1
 
 # Postgres-general environment variables
-export PGHOST="localhost"
+export PGHOST="pgdb1"
 export PGPORT="5432"
 export PGDATABASE="postgres"
 export PGUSER="postgres"
 export PGPASSFILE="/var/lib/postgresql/.pgpass"
+export PATH="/usr/lib/postgresql/14/bin/:$PATH" # Adding PATH in here to hold in case manually adding postgres bin directories to PATH is desired
 
 # Script-specific global defaults
 readonly _pgsbkupdir="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
@@ -27,8 +28,20 @@ function usage()
 
 function check_environment()
 {
-    _pgsversion="$(get_pgversion)"
-    _pgscluster="$(get_pgclustername)"
+    _pgsversion="$(get_pgversion)" || return 1
+    _pgscluster="$(get_pgclustername)" || return 1
+
+    case ${_pgsversion} in
+        "9.6")
+            _xlog_or_wal="xlog"
+        ;;
+        "10"|"11"|"12"|"13"|"14")
+            _xlog_or_wal="wal"
+        ;;
+        *)
+            echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
+        ;;
+    esac
 
     return 0
 }
