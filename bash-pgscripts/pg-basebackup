@@ -14,10 +14,15 @@ export PGUSER="postgres"
 export PGPASSFILE="/var/lib/postgresql/.pgpass"
 export PATH="/usr/lib/postgresql/14/bin/:$PATH" # Adding PATH in here to hold in case manually adding postgres bin directories to PATH is desired
 
-# Script-specific global defaults
+# Script-specific global readonly
 readonly _pgsbkupdir="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
 readonly _pgswalarchdir="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
 readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
+
+# Script-specific modifiable globals
+declare _pgsversion
+declare _pgscluster
+declare -l _xlog_or_wal
 
 function usage()
 {
@@ -31,6 +36,7 @@ function check_environment()
     _pgsversion="$(get_pgversion)" || return 1
     _pgscluster="$(get_pgclustername)" || return 1
 
+    # Reference for version detection https://why-upgrade.depesz.com/show?from=9.6&to=14&keywords=pg_basebackup
     case ${_pgsversion} in
         "9.6")
             _xlog_or_wal="xlog"
