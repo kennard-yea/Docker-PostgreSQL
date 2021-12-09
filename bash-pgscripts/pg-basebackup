@@ -16,7 +16,7 @@ export PATH="/usr/lib/postgresql/14/bin/:$PATH" # Adding PATH in here to hold in
 
 # Script-specific global readonly
 readonly _pgsbkupdir="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
-readonly _pgswalarchdir="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
+readonly _pgswalarchdir="/var/lib/postgresql/backup/wal_archive/${PGVERSION}/${PGCLUSTER}/" 
 readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
 
 # Script-specific modifiable globals
@@ -59,3 +59,7 @@ function initialize_backupdirs()
     mkdir -p _pgswalarchdir || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
 }
+
+# File Main
+if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
+fi
