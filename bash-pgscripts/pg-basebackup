@@ -28,8 +28,8 @@ declare -l _xlog_or_wal
 declare -l _create_slot
 
 # Script-specific modifiable globals modified by execution options
-readonly pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
-readonly pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
 declare wal_method="fetch"
 
 function usage()
