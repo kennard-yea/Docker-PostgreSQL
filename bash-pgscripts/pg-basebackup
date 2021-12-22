@@ -1,32 +1,40 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
 
-for file in $(ls /var/lib/postgresql/lib/*); do source ${file}; done # Import library functions and aliases
+# Import library functions and aliases
+source /var/lib/postgresql/lib/bash-functions.bash
+source /var/lib/postgresql/lib/postgres-functions.bash
 test_libsource || echo "Library import failed! Please check!" 1>&2 # && exit 1
 
-# Postgres-general environment variables
+# Postgres-specific environment variables
 export PGHOST="pgdb1"
 export PGPORT="5432"
 export PGDATABASE="postgres"
 export PGUSER="postgres"
 export PGPASSFILE="/var/lib/postgresql/.pgpass"
-export PATH="/usr/lib/postgresql/14/bin/:$PATH" # Adding PATH in here to hold in case manually adding postgres bin directories to PATH is desired
+
+# Other applicable globals
+export PATH="$PATH" # PATH environment placeholder
 
 # Script-specific global readonly
-readonly _pgsbkupdir="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
-readonly _pgswalarchdir="/var/lib/postgresql/backup/wal_archive/${PGVERSION}/${PGCLUSTER}/" 
 readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
 
-# Script-specific modifiable globals
+# Script-specific modifiable globals not modified by execution options
 declare _pgsversion
 declare _pgscluster
 declare -l _xlog_or_wal
+declare -l _create_slot
+
+# Script-specific modifiable globals modified by execution options
+readonly pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+readonly pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare wal_method="fetch"
 
 function usage()
 {
-    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir]
+    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method]
     " 1>&2
     exit 1
 }
@@ -44,6 +52,9 @@ function check_environment()
         "10"|"11"|"12"|"13"|"14")
             _xlog_or_wal="wal"
         ;;
+        "11"|"12"|"13"|"14")
+            _create_slot="yes"
+        ;;
         *)
             echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
         ;;
@@ -55,11 +66,13 @@ function check_environment()
 function initialize_backupdirs()
 {
     local returncode=0
-    mkdir -p _pgsbkupdir || returncode=$(( ${returncode} + 1 ))
-    mkdir -p _pgswalarchdir || returncode=$(( ${returncode} + 1 ))
+    mkdir -p pgsbkupdir || returncode=$(( ${returncode} + 1 ))
+    mkdir -p pgswalarchdir || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
 }
 
 # File Main
 if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
+    check_environment
+    exit 0
 fi
