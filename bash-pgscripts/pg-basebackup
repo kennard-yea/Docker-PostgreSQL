@@ -25,7 +25,6 @@ readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
 declare _pgsversion
 declare _pgscluster
 declare -l _xlog_or_wal
-declare -l _create_slot
 
 # Script-specific modifiable globals modified by execution options
 declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
@@ -52,9 +51,6 @@ function check_environment()
         "10"|"11"|"12"|"13"|"14")
             _xlog_or_wal="wal"
         ;;
-        "11"|"12"|"13"|"14")
-            _create_slot="yes"
-        ;;
         *)
             echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
         ;;
@@ -69,6 +65,19 @@ function initialize_backupdirs()
     mkdir -p pgsbkupdir || returncode=$(( ${returncode} + 1 ))
     mkdir -p pgswalarchdir || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
+}
+
+# run_backup expects postgres connectivity environment to be set (PGHOST, PGPORT, PGUSER)
+function run_basebackup()
+{
+    local backupdest=${1}
+    local walmethod=${2}
+    local xlogorwal=${3}
+    local compressionlevel=${4}
+
+    pg_basebackup --pgdata=${backupdest} --format=t --${xlogorwal}-method=${walmethod} --progress --verbose --no-password
+
+    return $?
 }
 
 # File Main
