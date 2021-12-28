@@ -29,11 +29,12 @@ declare -l _xlog_or_wal
 # Script-specific modifiable globals modified by execution options
 declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
 declare pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
-declare wal_method="fetch"
+declare -l wal_method="fetch"
+declare -i compress_level="0"
 
 function usage()
 {
-    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method]
+    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method] [-z compress_level]
     " 1>&2
     exit 1
 }
@@ -70,12 +71,31 @@ function initialize_backupdirs()
 # run_backup expects postgres connectivity environment to be set (PGHOST, PGPORT, PGUSER)
 function run_basebackup()
 {
-    local backupdest=${1}
-    local walmethod=${2}
-    local xlogorwal=${3}
-    local compressionlevel=${4}
+    function run_basebackup_usage() {
+        echo "Usage: run_basebackup
+        " 1>&2
+    }
 
-    pg_basebackup --pgdata=${backupdest} --format=t --${xlogorwal}-method=${walmethod} --progress --verbose --no-password
+    declare backupdest=${1}
+    declare -l walmethod=${2}
+    declare -l xlogorwal=${3}
+    declare -i compresslevel=${4}
+    declare -i returncode="0"
+
+    time_command pg_basebackup --pgdata=${backupdest} --format=tar \
+        --${xlogorwal}-method=${walmethod} \
+        --gzip --compress=${compresslevel} \
+        --progress --verbose --no-password
+    
+    returncode=$?
+    case ${returncode} in
+        0)
+            /bin/true
+        ;;
+        *)
+            run_basebackup_usage
+        ;;
+    esac
 
     return $?
 }
