@@ -62,9 +62,19 @@ function check_environment()
 
 function initialize_backupdirs()
 {
+    function initialize_backupdirs_usage() {
+        echo "Usage: initialize_backupdirs [pgsbkupdir] [pgswalarchdir]
+        "
+    }
     local returncode=0
-    mkdir -p pgsbkupdir || returncode=$(( ${returncode} + 1 ))
-    mkdir -p pgswalarchdir || returncode=$(( ${returncode} + 1 ))
+    local pgs_bkupdir=${1:-"${HOME}/backup/base/%version%/%cluster%/"}
+    local pgs_walarchdir=${2:-"${HOME}/backup/wal_archive/%version%/%cluster%/"}
+
+    pgs_bkupdir=$(echo "${pgs_bkupdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
+    pgs_walarchdir=$(echo "${pgs_walarchdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
+
+    mkdir -p ${pgs_bkupdir} || returncode=$(( ${returncode} + 1 ))
+    mkdir -p ${pgs_walarchdir} || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
 }
 
@@ -72,7 +82,7 @@ function initialize_backupdirs()
 function run_basebackup()
 {
     function run_basebackup_usage() {
-        echo "Usage: run_basebackup
+        echo "Usage: run_basebackup {backupdest} {walmethod} {xlogorwal} {compresslevel}
         " 1>&2
     }
 
