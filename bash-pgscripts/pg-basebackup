@@ -1,35 +1,117 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
 
-for file in $(ls ${PGLIB}/*); do source ${file}; done # Import library functions and aliases
-test_libsource || echo "Library import failed! Please check!" 1>&2 && exit 1
+# Import library functions and aliases
+source /var/lib/postgresql/lib/bash-functions.bash
+source /var/lib/postgresql/lib/postgres-functions.bash
+test_libsource || echo "Library import failed! Please check!" 1>&2 # && exit 1
 
-# Postgres-general environment variables
-export PGHOST="localhost"
+# Postgres-specific environment variables
+export PGHOST="pgdb1"
 export PGPORT="5432"
 export PGDATABASE="postgres"
 export PGUSER="postgres"
 export PGPASSFILE="/var/lib/postgresql/.pgpass"
 
-# Script-specific environment variables
-export BBU_PGVERSION="$(get_pgversion)"
-export BBU_PGCLUSTER="$(get_pgclustername)"
-export BBU_PGBKUPDIR="/var/lib/postgresql/backup/base/${PGVERSION}/${PGCLUSTER}/"
-export BBU_PGWALARCHDIR="/var/lib/postgresql/walarchive/${PGVERSION}/${PGCLUSTER}/" 
-export BBU_SUPPORTEDPGVERSIONS=("13" "12" "11" "10" "9.6")
+# Other applicable globals
+export PATH="$PATH" # PATH environment placeholder
+
+# Script-specific global readonly
+readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")
+
+# Script-specific modifiable globals not modified by execution options
+declare _pgsversion
+declare _pgscluster
+declare -l _xlog_or_wal
+
+# Script-specific modifiable globals modified by execution options
+declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare -l wal_method="fetch"
+declare -i compress_level="0"
+
+function usage()
+{
+    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method] [-z compress_level]
+    " 1>&2
+    exit 1
+}
 
 function check_environment()
 {
-    
+    _pgsversion="$(get_pgversion)" || return 1
+    _pgscluster="$(get_pgclustername)" || return 1
+
+    # Reference for version detection https://why-upgrade.depesz.com/show?from=9.6&to=14&keywords=pg_basebackup
+    case ${_pgsversion} in
+        "9.6")
+            _xlog_or_wal="xlog"
+        ;;
+        "10"|"11"|"12"|"13"|"14")
+            _xlog_or_wal="wal"
+        ;;
+        *)
+            echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
+        ;;
+    esac
+
+    return 0
 }
 
 function initialize_backupdirs()
 {
+    function initialize_backupdirs_usage() {
+        echo "Usage: initialize_backupdirs [pgsbkupdir] [pgswalarchdir]
+        "
+    }
     local returncode=0
+    local pgs_bkupdir=${1:-"${HOME}/backup/base/%version%/%cluster%/"}
+    local pgs_walarchdir=${2:-"${HOME}/backup/wal_archive/%version%/%cluster%/"}
 
+    pgs_bkupdir=$(echo "${pgs_bkupdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
+    pgs_walarchdir=$(echo "${pgs_walarchdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
 
-    
+    mkdir -p ${pgs_bkupdir} || returncode=$(( ${returncode} + 1 ))
+    mkdir -p ${pgs_walarchdir} || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
 }
+
+# run_backup expects postgres connectivity environment to be set (PGHOST, PGPORT, PGUSER)
+function run_basebackup()
+{
+    function run_basebackup_usage() {
+        echo "Usage: run_basebackup {backupdest} {walmethod} {xlogorwal} {compresslevel}
+        " 1>&2
+    }
+
+    declare backupdest=${1}
+    declare -l walmethod=${2}
+    declare -l xlogorwal=${3}
+    declare -i compresslevel=${4}
+    declare -i returncode="0"
+
+    time_command pg_basebackup --pgdata=${backupdest} --format=tar \
+        --${xlogorwal}-method=${walmethod} \
+        --gzip --compress=${compresslevel} \
+        --progress --verbose --no-password
+    
+    returncode=$?
+    case ${returncode} in
+        0)
+            /bin/true
+        ;;
+        *)
+            run_basebackup_usage
+        ;;
+    esac
+
+    return $?
+}
+
+# File Main
+if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
+    check_environment
+    exit 0
+fi
