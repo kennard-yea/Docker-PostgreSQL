@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
@@ -112,6 +112,28 @@ function run_basebackup()
 
 # File Main
 if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
+  while getopts ":D:W:x:z:" option; do
+    case "${option}" in
+      D)
+        pgsbkupdir=${OPTARG}
+      ;;
+      W)
+        pgswalarchdir=${OPTARG}
+      ;;
+      x)
+        wal_method=${OPTARG}
+      ;;
+      z)
+        compress_level=${OPTARG}
+      ;;
+      *)
+        usage
+        exit 1
+      ;;
+    esac
+  done
+
     check_environment
+    run_basebackup ${pgsbkupdir} ${wal_method} ${_xlog_or_wal} ${compress_level}
     exit 0
 fi
