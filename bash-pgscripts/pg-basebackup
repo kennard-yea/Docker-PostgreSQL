@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 #
 # Take a base backup of PostgreSQL, store in a backup home using version and cluster names to sort
 #
@@ -91,8 +91,12 @@ function run_basebackup()
     declare -l xlogorwal=${3}
     declare -i compresslevel=${4}
     declare -i returncode="0"
+    declare now="$(date +%F)"
 
-    time_command pg_basebackup --pgdata=${backupdest} --format=tar \
+    pgs_bkupdir=$(echo "${pgs_bkupdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
+    pgs_walarchdir=$(echo "${pgs_walarchdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
+
+    time_command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
         --${xlogorwal}-method=${walmethod} \
         --gzip --compress=${compresslevel} \
         --progress --verbose --no-password
@@ -112,6 +116,44 @@ function run_basebackup()
 
 # File Main
 if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
+  while getopts ":D:W:x:z:h:p:d:U:f:" option; do
+    case "${option}" in
+      D)
+        pgsbkupdir=${OPTARG}
+      ;;
+      W)
+        pgswalarchdir=${OPTARG}
+      ;;
+      x)
+        wal_method=${OPTARG}
+      ;;
+      z)
+        compress_level=${OPTARG}
+      ;;
+      h)
+        export PGHOST="${OPTARG}"
+      ;;
+      p)
+        export PGPORT="${OPTARG}"
+      ;;
+      d)
+        export PGDATABASE="${OPTARG}"
+      ;;
+      U)
+        export PGUSER="${OPTARG}"
+      ;;
+      f)
+        export PGPASSFILE="${OPTARG}"
+      ;;
+      *)
+        usage
+        exit 1
+      ;;
+    esac
+  done
+
     check_environment
+    initialize_backupdirs
+    run_basebackup ${pgsbkupdir} ${wal_method} ${_xlog_or_wal} ${compress_level}
     exit 0
 fi
