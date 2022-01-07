@@ -70,9 +70,6 @@ function initialize_backupdirs()
     local pgs_bkupdir=${1:-"${HOME}/backup/base/%version%/%cluster%/"}
     local pgs_walarchdir=${2:-"${HOME}/backup/wal_archive/%version%/%cluster%/"}
 
-    pgs_bkupdir=$(echo "${pgs_bkupdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
-    pgs_walarchdir=$(echo "${pgs_walarchdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
-
     mkdir -p ${pgs_bkupdir} || returncode=$(( ${returncode} + 1 ))
     mkdir -p ${pgs_walarchdir} || returncode=$(( ${returncode} + 1 ))
     return ${returncode}
@@ -92,9 +89,6 @@ function run_basebackup()
     declare -i compresslevel=${4}
     declare -i returncode="0"
     declare now="$(date +%F)"
-
-    pgs_bkupdir=$(echo "${pgs_bkupdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
-    pgs_walarchdir=$(echo "${pgs_walarchdir}" | sed "s/%version%/${_pgsversion}/g" | sed "s/%cluster%/${_pgscluster}/g")
 
     time_command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
         --${xlogorwal}-method=${walmethod} \
@@ -153,7 +147,13 @@ if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
   done
 
     check_environment
-    initialize_backupdirs
+
+    pgsbkupdir=${pgsbkupdir/'%version%'/${_pgsversion}}
+    pgsbkupdir=${pgsbkupdir/'%cluster%'/${_pgscluster}}
+    pgswalarchdir=${pgswalarchdir/'%version%'/${_pgsversion}}
+    pgswalarchdir=${pgswalarchdir/'%cluster%'/${_pgscluster}}
+
+    initialize_backupdirs ${pgsbkupdir} ${pgswalarchdir}
     run_basebackup ${pgsbkupdir} ${wal_method} ${_xlog_or_wal} ${compress_level}
     exit 0
 fi
