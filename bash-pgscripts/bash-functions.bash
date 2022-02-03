@@ -4,6 +4,8 @@
 # THIS FILE IS A LIBRARY AND SHOULD ONLY CONTAIN FUNCTIONS
 #
 
+# USAGE: Time-Command [command]
+# Executes a command, command list, or pipeline and reports the runtime to STDERR once complete
 function Time-Command
 {
   declare helpText='
@@ -11,7 +13,7 @@ function Time-Command
   \r    Time-Command
   \r\n DESCRIPTION
   \r    Executes a command, command list, or pipeline and reports the runtime to STDERR once complete
-  \r\n SYNTAX
+  \r\n USAGE
   \r    Time-Command [command]
   \r\n GLOBALS
   \r    None
