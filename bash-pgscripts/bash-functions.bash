@@ -4,32 +4,25 @@
 # THIS FILE IS A LIBRARY AND SHOULD ONLY CONTAIN FUNCTIONS
 #
 
-###########################################################
-# test_libsource - returns 0 to confirm that the library was sourced correctly
-# Globals: None
-# Arguments: None
-# Outputs: None
-# Returns: 0
-###########################################################
-function test_libsource()
+function Time-Command
 {
-  return 0
-}
-
-###########################################################
-# time_command - times execution of command or command list
-# Globals: None
-# Arguments: Command or command list (command lists do not work yet)
-# Outputs: Command or command list output and runtime
-# Returns: Return code of command or command list
-###########################################################
-function time_command()
-{
-  function time_command_usage()
-  {
-    echo "time_command [<command>] [<command parameters>]" 1>&2
-    return 0
-  }
+  declare helpText='
+  \r\r NAME
+  \r    Time-Command
+  \r\n DESCRIPTION
+  \r    Executes a command, command list, or pipeline and reports the runtime to STDERR once complete
+  \r\n SYNTAX
+  \r    Time-Command [command]
+  \r\n GLOBALS
+  \r    None
+  \r\n INPUTS
+  \r    The arguments are concatenated together into a single command, which is then read and executed by eval
+  \r\n OUTPUTS
+  \r    Outputs the STDOUT and STDERR of the command to the same channels, plus the runtime of the command in STDERR
+  \r\n RETURNS
+  \r    The return status of the command is the return status of Time-Command. If there are no arguments or only empty arguments, the return status is zero
+  \r\n'
+  [[ ${1} == '--help' ]] && printf "${helpText}" && return 1
 
   start_date="$(date +%s)"
   eval $@

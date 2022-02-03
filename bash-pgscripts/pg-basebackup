@@ -90,7 +90,7 @@ function run_basebackup()
     declare -i returncode="0"
     declare now="$(date +%F)"
 
-    time_command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
+    Time-Command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
         --${xlogorwal}-method=${walmethod} \
         --gzip --compress=${compresslevel} \
         --progress --verbose --no-password
