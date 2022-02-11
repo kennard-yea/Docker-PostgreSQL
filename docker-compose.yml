@@ -83,6 +83,54 @@ services:
         secrets:
             - db3_postgres_password_file
             - db3_pgbench_password_file
+    zabbix-db:
+        image: postgres:14
+        environment:
+            POSTGRES_PASSWORD_FILE: /run/secrets/zabbix_db_password_file
+            POSTGRES_USER: zabbix
+            POSTGRES_DB: zabbix
+        networks:
+            zabbix-net:
+                aliases:
+                  - zabbix-db-01
+        secrets:
+          - zabbix_db_password_file
+    zabbix-server:
+        image: zabbix/zabbix-server-pgsql:ubuntu-latest
+        environment:
+            DB_SERVER_HOST: zabbix-db-01
+            POSTGRES_USER: zabbix
+            POSTGRES_PASSWORD_FILE: /run/secrets/zabbix_db_password_file
+            POSTGRES_DB: zabbix
+        networks:
+            zabbix-net:
+                aliases:
+                  - zabbix-server-01
+        secrets:
+          - zabbix_db_password_file
+    zabbix-frontend:
+        image: zabbix/zabbix-web-apache-pgsql:ubuntu-latest
+        environment:
+            DB_SERVER_HOST: zabbix-db-01
+            POSTGRES_USER: zabbix
+            POSTGRES_PASSWORD_FILE: /run/secrets/zabbix_db_password_file
+            ZBX_SERVER_HOST: zabbix-server-01
+            PHP_TZ: America/New_York
+        secrets:
+          - zabbix_db_password_file
+        networks:
+            zabbix-net:
+                aliases:
+                  - zabbix-frontend-01
+        ports:
+            - target: 8080
+              published: 80
+              protocol: tcp
+              mode: host
+            - target: 8443
+              published: 443
+              protocol:  tcp
+              mode: host
 
 volumes:
     db1-data-vol-v13:
@@ -93,6 +141,10 @@ networks:
     db-net:
         driver: overlay
         attachable: true
+    zabbix-net:
+        driver: overlay
+        attachable: true
+
 secrets:
     db1_postgres_password_file:
         file: ./db1/.postgres_password
@@ -102,3 +154,5 @@ secrets:
         file: ./db1/.pgbench_password
     db3_pgbench_password_file:
         file: ./db3/.pgbench_password
+    zabbix_db_password_file:
+        file: ./zabbix-db/.zabbix_db_password
