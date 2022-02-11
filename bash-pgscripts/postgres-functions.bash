@@ -4,87 +4,55 @@
 # THIS FILE IS A LIBRARY AND SHOULD ONLY CONTAIN FUNCTIONS
 #
 
-psql_noinput="psql --no-psqlrc --no-password"
-psql_noalign="${psql_noinput} --quiet --no-align --tuples-only"
+function Get-PgVersion {
+  declare helpText='
+  \r\r NAME
+  \r    Get-PgVersion
+  \r\n DESCRIPTION
+  \r    Connects to a database cluster and echos the major release of PostgreSQL running at a connection string. Relies on the environment variables PGHOST, PGPORT, PGDATABASE, and PGUSER for connection
+  \r\n USAGE
+  \r    Get-PgVersion
+  \r\n GLOBALS
+  \r    Get-PgVersion calls psql to collect its output, so all environment variables supported by psql are supported here.
+  \r\n INPUTS
+  \r    None
+  \r\n OUTPUTS
+  \r    Outputs the the major release of PostgreSQL stored in the PG_VERSION file of the database cluster
+  \r\n RETURNS
+  \r    The expected return status of psql. Returns 0 to the shell if it finished normally, 1 if a fatal error of its own occurs (e.g., out of memory, file not found), 2 if the connection to the server went bad and the session was not interactive.
+  \r\n'
+  [[ ${1} == '--help' ]] && printf "${helpText}" && return 1
 
-###########################################################
-# get_pgversion - echos the major release of PostgreSQL at a connection string
-# Globals: None
-# Inputs: All arguments are passed to a psql "--dbname" flag
-# Outputs: The major release read from PG_VERSION at a connection string
-# Returns: 0 on successful output, 1 if unable to connect
-###########################################################
-function get_pgversion()
-{
-  function get_pgversion_usage()
-  {
-    echo "get_pgversion [<psql_connstring>]" 1>&2
-    return 0
-  }
-
-  local dbname="${@}"
-  ${psql_noalign} --dbname="${dbname}" --command="select null" 1>/dev/null
-
-  case ${?} in
-    0)
-      # Run pg_read_file to read PG_VERSION in the cluster
-      local pgversion=$(${psql_noalign} \
-        --dbname="${dbname}" \
-        --command="select pg_read_file('PG_VERSION')")
-      echo ${pgversion}
-      return 0
-    ;;
-
-    *)
-      echo "connection attempt failed to connection string ${dbname}" 1>&2
-      get_pgversion_usage 1>&2
-      return 1
-    ;;
-  esac
+  psql -qwAXt --command="select pg_read_file('PG_VERSION')"
+  return ${?}
 }
 
-###########################################################
-# get_pgclustername - echo the PostgreSQL cluster name at a connection string
-# Globals: None
-# Inputs: All arguments are passed to a psql "--dbname" flag
-# Outputs: The set cluster_name, or 'main' if not set or supported
-# Returns: 0 on successful output, 1 if unable to connect
-###########################################################
-function get_pgclustername()
-{
-  function get_pgclustername_usage()
-  {
-    echo "get_pgclustername [<psql_connstring>]" 1>&2
+function Get-PgClusterName {
+  declare helpText='
+  \r\r NAME
+  \r    Get-PgClusterName
+  \r\n DESCRIPTION
+  \r    Connects to a database cluster and echos the name of the cluster. Relies on the environment variables PGHOST, PGPORT, PGDATABASE, and PGUSER for connection
+  \r\n USAGE
+  \r    Get-PgClusterName
+  \r\n GLOBALS
+  \r    Get-PgClusterName calls psql to collect its output, so all environment variables supported by psql are supported here.
+  \r\n INPUTS
+  \r    None
+  \r\n OUTPUTS
+  \r    Outputs the the current setting of cluster_name. If cluster_name is not set or if the verson of PostgreSQL being connected to does not support cluster_name, output null.
+  \r\n RETURNS
+  \r    The expected return status of psql. Returns 0 to the shell if it finished normally, 1 if a fatal error of its own occurs (e.g., out of memory, file not found), 2 if the connection to the server went bad and the session was not interactive.
+  \r\n'
+  [[ ${1} == '--help' ]] && printf "${helpText}" && return 1
+
+  local pgVersion="$(Get-PgVersion ${dbname})" || return $?
+
+  if [[ ${pgVersion} =~ [987]\.[654321] ]]; then
+    echo
     return 0
-  }
+  fi
 
-  local dbname="${@}"
-  ${psql_noalign} --dbname="${dbname}" --command="select null" 1>/dev/null
-
-  case ${?} in
-    0)
-      local pg_version="$(get_pgversion ${dbname})"
-      case ${pg_version} in
-      "13" | "12" | "11" | "10" | "9.6" | "9.5")
-        # if cluster_name is null, then use main, else use cluster_name
-        [[ $($psql_noalign --dbname="${dbname}" --command="show cluster_name") == "" ]] && \
-          echo "main" || \
-          ${psql_noalign} --dbname="${dbname}" --command="show cluster_name" | \
-          sed "s:\/:\-:g"
-        return 0
-      ;;
-        
-      *) # send 'main' if not set or supported
-        echo "main"
-        return 0
-      ;;
-      esac
-    ;;
-
-    *)
-      echo "connection attempt failed to connection string ${dbname}" 1>&2
-      get_pgclustername_usage 1>&2
-      return 1
-    ;;
-  esac
+  psql -qwAXt --command="show cluster_name"
+  return ${?}
 }

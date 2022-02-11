@@ -41,8 +41,8 @@ function usage()
 
 function check_environment()
 {
-    _pgsversion="$(get_pgversion)" || return 1
-    _pgscluster="$(get_pgclustername)" || return 1
+    _pgsversion="$(Get-PgVersion)" || return 1
+    _pgscluster="$(Get-PgClusterName)" || return 1
 
     # Reference for version detection https://why-upgrade.depesz.com/show?from=9.6&to=14&keywords=pg_basebackup
     case ${_pgsversion} in

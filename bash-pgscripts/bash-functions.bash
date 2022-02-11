@@ -6,8 +6,7 @@
 
 # USAGE: Time-Command [command]
 # Executes a command, command list, or pipeline and reports the runtime to STDERR once complete
-function Time-Command
-{
+function Time-Command {
   declare helpText='
   \r\r NAME
   \r    Time-Command
