@@ -3,3 +3,4 @@ docker image build --tag internal/db2 db2
 docker image build --tag internal/db3 db3
 docker image build --tag internal/pgadmin pgadmin
 docker image build --tag internal/bash-pgscripts bash-pgscripts
+docker image build --tag internal/pgagent pgagent
