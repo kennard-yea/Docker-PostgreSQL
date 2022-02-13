@@ -3,4 +3,4 @@
 .postgres_password
 .pgbench_password
 pgadmin.env
-.zabbix_db_password
+.grafana_password

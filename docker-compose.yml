@@ -29,6 +29,8 @@ services:
             PGBENCH_USER: pgbench
             PGBENCH_DB: pgbench
             PGBENCH_SCALE: 10
+            GRAFANA_USER: grafana
+            GRAFANA_PASSWORD_FILE: /run/secrets/db1_grafana_password_file
         networks:
             db-net:
                 aliases:
@@ -126,3 +128,5 @@ secrets:
         file: ./db1/.pgbench_password
     db3_pgbench_password_file:
         file: ./db3/.pgbench_password
+    db1_grafana_password_file:
+        file: ./db1/.grafana_password

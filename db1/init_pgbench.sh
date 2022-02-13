@@ -23,19 +23,26 @@ function file_env() {
         unset "$fileVar"
 }
 
-# usage: init_pbench_user
+# usage: init_users
 # creates user for use in pgbench testing. Requires global environment variables PGBENCH_USER and PGBENCH_PASSWORD
-function init_pgbench_user() {
+function init_users() {
     createuser --echo --login "$PGBENCH_USER"
+    createuser --echo --login "$GRAFANA_USER"
     psql --command="ALTER USER $PGBENCH_USER PASSWORD '$PGBENCH_PASSWORD'"
+    psql --command="ALTER USER $GRAFANA_USER PASSWORD '$GRAFANA_PASSWORD'"
     return 0
 }
 
-# usage: init_pgbench_db
+# usage: init_dbs
 # creates database for use in pgbench testing. Requires global environment variables PGBENCH_USER and PGBENCH_DB
-function init_pgbench_db() {
+function init_dbs() {
     createdb --echo --owner="$PGBENCH_USER" $PGBENCH_DB
+    createdb --echo --owner="$GRAFANA_USER" grafana
     return 0
+}
+
+function init_extensions() {
+    psql --command="CREATE EXTENSION pgagent" postgres
 }
 
 # usage: pgbench_init
@@ -47,8 +54,9 @@ function pgbench_init() {
 
 function main() {
     file_env PGBENCH_PASSWORD
-    init_pgbench_user
-    init_pgbench_db
+    init_users
+    init_dbs
+    init_extensions
     pgbench_init
     return 0
 }
