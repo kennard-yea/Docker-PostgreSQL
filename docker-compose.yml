@@ -47,6 +47,7 @@ services:
         secrets:
             - db1_postgres_password_file
             - db1_pgbench_password_file
+            - db1_grafana_password_file
     db2:
         image: internal/db2
         environment:

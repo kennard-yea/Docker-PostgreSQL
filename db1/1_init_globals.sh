@@ -33,31 +33,10 @@ function init_users() {
     return 0
 }
 
-# usage: init_dbs
-# creates database for use in pgbench testing. Requires global environment variables PGBENCH_USER and PGBENCH_DB
-function init_dbs() {
-    createdb --echo --owner="$PGBENCH_USER" $PGBENCH_DB
-    createdb --echo --owner="$GRAFANA_USER" grafana
-    return 0
-}
-
-function init_extensions() {
-    psql --command="CREATE EXTENSION pgagent" postgres
-}
-
-# usage: pgbench_init
-# initializes pgbench to $PGBENCH_SCALE scale. Requires global environment variabbles PGBENCH_USER, PGBENCH_DB, and PGBENCH_SCALE
-function pgbench_init() {
-    pgbench --initialize --scale=$PGBENCH_SCALE --username=$PGBENCH_USER $PGBENCH_DB
-    return 0
-}
-
 function main() {
     file_env PGBENCH_PASSWORD
+    file_env GRAFANA_PASSWORD
     init_users
-    init_dbs
-    init_extensions
-    pgbench_init
     return 0
 }
 
