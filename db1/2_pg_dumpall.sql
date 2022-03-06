@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2022-02-22 22:03:55 UTC
+-- Started on 2022-03-06 22:33:14 UTC
 
 SET default_transaction_read_only = off;
 
@@ -13,12 +13,11 @@ SET standard_conforming_strings = on;
 -- Roles
 --
 
-CREATE ROLE grafana;
-ALTER ROLE grafana WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:k+MVOjL5xt28D+I6Lurntw==$7eiU76Cy2jUFpFFy83N1DxxUzcNhlfSXqZVYZjNC2Lw=:D5H+0I1j8YUoyZmomNvwwTz8Jhj292DzLU7NTm1Yo0E=';
+ALTER ROLE grafana WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS;
 CREATE ROLE pgbench;
-ALTER ROLE pgbench WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:8Wc7pDgYSZvOR9AGsBvXQQ==$QqZ73IVJprWbJefOR4p9x/TZLFpWW+IajRokBtctr5k=:UYXf+1GnMOr2b5uMG6uoxYQ0OIWpXirWpuzaqvMjKv4=';
+ALTER ROLE pgbench WITH NOSUPERUSER INHERIT NOCREATEROLE NOCREATEDB LOGIN NOREPLICATION NOBYPASSRLS;
 CREATE ROLE postgres;
-ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:JuUvGlY9AoqZdEM8/JN62g==$4M8ugidCJUowHKEC0FUXKKd2k6qDpNyfu+qNCpiJVmQ=:iOt4wagB8xMG2nmkuc/ZZILvNyshVzs0c81fJl/6sMc=';
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS;
 
 
 --
@@ -47,7 +46,7 @@ GRANT pg_monitor TO grafana GRANTED BY postgres;
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.1
 
--- Started on 2022-02-22 22:03:55 UTC
+-- Started on 2022-03-06 22:33:14 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -60,7 +59,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2022-02-22 22:03:55 UTC
+-- Completed on 2022-03-06 22:33:14 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -77,7 +76,7 @@ SET row_security = off;
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.1
 
--- Started on 2022-02-22 22:03:55 UTC
+-- Started on 2022-03-06 22:33:14 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -91,7 +90,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3338 (class 1262 OID 16387)
+-- TOC entry 3338 (class 1262 OID 16386)
 -- Name: grafana; Type: DATABASE; Schema: -; Owner: grafana
 --
 
@@ -114,7 +113,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 6 (class 2615 OID 16388)
+-- TOC entry 7 (class 2615 OID 16387)
 -- Name: pglogs; Type: SCHEMA; Schema: -; Owner: grafana
 --
 
@@ -124,7 +123,7 @@ CREATE SCHEMA pglogs;
 ALTER SCHEMA pglogs OWNER TO grafana;
 
 --
--- TOC entry 9 (class 2615 OID 16616)
+-- TOC entry 6 (class 2615 OID 16388)
 -- Name: pgmetrics; Type: SCHEMA; Schema: -; Owner: grafana
 --
 
@@ -171,7 +170,7 @@ CREATE SERVER pglog_server FOREIGN DATA WRAPPER file_fdw;
 ALTER SERVER pglog_server OWNER TO postgres;
 
 --
--- TOC entry 214 (class 1259 OID 16617)
+-- TOC entry 213 (class 1259 OID 16395)
 -- Name: raw_metrics_id_seq; Type: SEQUENCE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -192,21 +191,31 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 215 (class 1259 OID 16618)
+-- TOC entry 214 (class 1259 OID 16396)
 -- Name: raw_metrics; Type: TABLE; Schema: pgmetrics; Owner: grafana
 --
 
 CREATE TABLE pgmetrics.raw_metrics (
     id integer DEFAULT nextval('pgmetrics.raw_metrics_id_seq'::regclass) NOT NULL,
     collection_at integer NOT NULL,
-    metrics_raw jsonb NOT NULL
+    metrics_raw jsonb NOT NULL,
+    cluster_name text NOT NULL
 );
 
 
 ALTER TABLE pgmetrics.raw_metrics OWNER TO grafana;
 
 --
--- TOC entry 213 (class 1259 OID 16395)
+-- TOC entry 3340 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN raw_metrics.cluster_name; Type: COMMENT; Schema: pgmetrics; Owner: grafana
+--
+
+COMMENT ON COLUMN pgmetrics.raw_metrics.cluster_name IS 'Arbitrary name of the host / database cluster where pgmetrics data is sourced from.';
+
+
+--
+-- TOC entry 215 (class 1259 OID 16402)
 -- Name: activity_wait_event_type_counts; Type: TABLE; Schema: pgstats_history; Owner: grafana
 --
 
@@ -229,7 +238,7 @@ PARTITION BY RANGE (insert_timestamp);
 ALTER TABLE pgstats_history.activity_wait_event_type_counts OWNER TO grafana;
 
 --
--- TOC entry 3193 (class 2606 OID 16625)
+-- TOC entry 3191 (class 2606 OID 16416)
 -- Name: raw_metrics raw_metrics_pkey; Type: CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -238,7 +247,7 @@ ALTER TABLE ONLY pgmetrics.raw_metrics
 
 
 --
--- TOC entry 3191 (class 2606 OID 16409)
+-- TOC entry 3193 (class 2606 OID 16418)
 -- Name: activity_wait_event_type_counts activity_wait_event_type_counts_pkey; Type: CONSTRAINT; Schema: pgstats_history; Owner: grafana
 --
 
@@ -246,7 +255,7 @@ ALTER TABLE ONLY pgstats_history.activity_wait_event_type_counts
     ADD CONSTRAINT activity_wait_event_type_counts_pkey PRIMARY KEY (datid, insert_timestamp);
 
 
--- Completed on 2022-02-22 22:03:55 UTC
+-- Completed on 2022-03-06 22:33:14 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -263,7 +272,7 @@ ALTER TABLE ONLY pgstats_history.activity_wait_event_type_counts
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.1
 
--- Started on 2022-02-22 22:03:55 UTC
+-- Started on 2022-03-06 22:33:14 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -277,7 +286,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3328 (class 1262 OID 16410)
+-- TOC entry 3328 (class 1262 OID 16419)
 -- Name: pgbench; Type: DATABASE; Schema: -; Owner: pgbench
 --
 
@@ -304,7 +313,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 211 (class 1259 OID 16595)
+-- TOC entry 211 (class 1259 OID 16603)
 -- Name: pgbench_accounts; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -320,7 +329,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_accounts OWNER TO pgbench;
 
 --
--- TOC entry 212 (class 1259 OID 16598)
+-- TOC entry 212 (class 1259 OID 16606)
 -- Name: pgbench_branches; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -335,7 +344,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_branches OWNER TO pgbench;
 
 --
--- TOC entry 209 (class 1259 OID 16589)
+-- TOC entry 209 (class 1259 OID 16597)
 -- Name: pgbench_history; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -352,7 +361,7 @@ CREATE TABLE public.pgbench_history (
 ALTER TABLE public.pgbench_history OWNER TO pgbench;
 
 --
--- TOC entry 210 (class 1259 OID 16592)
+-- TOC entry 210 (class 1259 OID 16600)
 -- Name: pgbench_tellers; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -368,7 +377,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_tellers OWNER TO pgbench;
 
 --
--- TOC entry 3181 (class 2606 OID 16610)
+-- TOC entry 3181 (class 2606 OID 16618)
 -- Name: pgbench_accounts pgbench_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -377,7 +386,7 @@ ALTER TABLE ONLY public.pgbench_accounts
 
 
 --
--- TOC entry 3183 (class 2606 OID 16606)
+-- TOC entry 3183 (class 2606 OID 16614)
 -- Name: pgbench_branches pgbench_branches_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -386,7 +395,7 @@ ALTER TABLE ONLY public.pgbench_branches
 
 
 --
--- TOC entry 3179 (class 2606 OID 16608)
+-- TOC entry 3179 (class 2606 OID 16616)
 -- Name: pgbench_tellers pgbench_tellers_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -394,7 +403,7 @@ ALTER TABLE ONLY public.pgbench_tellers
     ADD CONSTRAINT pgbench_tellers_pkey PRIMARY KEY (tid);
 
 
--- Completed on 2022-02-22 22:03:55 UTC
+-- Completed on 2022-03-06 22:33:14 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -413,7 +422,7 @@ ALTER TABLE ONLY public.pgbench_tellers
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.1
 
--- Started on 2022-02-22 22:03:55 UTC
+-- Started on 2022-03-06 22:33:14 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -427,7 +436,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 9 (class 2615 OID 16430)
+-- TOC entry 7 (class 2615 OID 16438)
 -- Name: pgagent; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -438,7 +447,7 @@ ALTER SCHEMA pgagent OWNER TO postgres;
 
 --
 -- TOC entry 3427 (class 0 OID 0)
--- Dependencies: 9
+-- Dependencies: 7
 -- Name: SCHEMA pgagent; Type: COMMENT; Schema: -; Owner: postgres
 --
 
@@ -446,7 +455,7 @@ COMMENT ON SCHEMA pgagent IS 'pgAgent system tables';
 
 
 --
--- TOC entry 2 (class 3079 OID 16431)
+-- TOC entry 2 (class 3079 OID 16439)
 -- Name: pgagent; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -462,13 +471,13 @@ CREATE EXTENSION IF NOT EXISTS pgagent WITH SCHEMA pgagent;
 COMMENT ON EXTENSION pgagent IS 'A PostgreSQL job scheduler';
 
 
--- Completed on 2022-02-22 22:03:56 UTC
+-- Completed on 2022-03-06 22:33:15 UTC
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2022-02-22 22:03:56 UTC
+-- Completed on 2022-03-06 22:33:15 UTC
 
 --
 -- PostgreSQL database cluster dump complete
