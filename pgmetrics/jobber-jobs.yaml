@@ -1,0 +1,9 @@
+version: 1.4
+
+jobs:
+  PgMetrics:
+    cmd: "pgmetrics_collect.sh"
+    time: 00 */2 * * * *
+    onError: Stop
+    notifyOnFailure:
+      - type: stdout
