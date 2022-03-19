@@ -19,18 +19,8 @@ services:
               target: /var/lib/pgadmin
     db1:
         image: internal/db1
-        environment:
-            POSTGRES_PASSWORD_FILE: /run/secrets/db1_postgres_password_file
-            POSTGRES_USER: postgres
-            POSTGRES_DB: postgres
-            PGDATA: /var/lib/postgresql/data
-            PGPORT: 5432
-            PGBENCH_PASSWORD_FILE: /run/secrets/db1_pgbench_password_file
-            PGBENCH_USER: pgbench
-            PGBENCH_DB: pgbench
-            PGBENCH_SCALE: 10
-            GRAFANA_USER: grafana
-            GRAFANA_PASSWORD_FILE: /run/secrets/db1_grafana_password_file
+        env_file:
+            - db1/db1.env
         networks:
             db-net:
                 aliases:
@@ -44,18 +34,10 @@ services:
             - type: volume
               source: db1-data-vol-v13
               target: /var/lib/postgresql/data
-        secrets:
-            - db1_postgres_password_file
-            - db1_pgbench_password_file
-            - db1_grafana_password_file
     db2:
         image: internal/db2
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_DB: postgres
-            PGDATA: /var/lib/postgresql/data
-            PGPORT: 5432
-            POSTGRES_PRIMARY_HOST: pgdb1
+        env_file:
+            - db2/db2.env
         depends_on:
             - db1
         networks:
@@ -66,26 +48,6 @@ services:
             - type: volume
               source: db2-data-vol-v13
               target: /var/lib/postgresql/data
-    db3:
-        image: internal/db3
-        environment:
-            POSTGRES_PASSWORD_FILE: /run/secrets/db3_postgres_password_file
-            POSTGRES_USER: postgres
-            POSTGRES_DB: postgres
-            PGDATA: /var/lib/postgresql/data
-            PGPORT: 5432
-            PGLIB: /var/lib/postgresql/lib/
-        networks:
-            db-net:
-                aliases:
-                    - pgdb3
-        volumes:
-            - type: volume
-              source: db3-data-vol-v13
-              target: /var/lib/postgresql/data
-        secrets:
-            - db3_postgres_password_file
-            - db3_pgbench_password_file
     pgagent-db1:
         image: internal/pgagent
         environment:
@@ -114,16 +76,6 @@ services:
             db-net:
                 aliases:
                   - pgmetrics-db2
-    pgmetrics-db3:
-        image: internal/pgmetrics
-        environment:
-            SOURCE_HOST: pgdb3
-            PGHOST: pgdb1
-            PGUSER: postgres
-        networks:
-            db-net:
-                aliases:
-                  - pgmetrics-db3
     grafana:
         image: grafana/grafana:main
         networks:
@@ -140,24 +92,8 @@ services:
 volumes:
     db1-data-vol-v13:
     db2-data-vol-v13:
-    db3-data-vol-v13:
     pgadmin-vol:
 networks:
     db-net:
         driver: overlay
         attachable: true
-    zabbix-net:
-        driver: overlay
-        attachable: true
-
-secrets:
-    db1_postgres_password_file:
-        file: ./db1/.postgres_password
-    db3_postgres_password_file:
-        file: ./db3/.postgres_password
-    db1_pgbench_password_file:
-        file: ./db1/.pgbench_password
-    db3_pgbench_password_file:
-        file: ./db3/.pgbench_password
-    db1_grafana_password_file:
-        file: ./db1/.grafana_password

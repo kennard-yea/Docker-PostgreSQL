@@ -8,43 +8,48 @@ Personal playground using Docker, primarily for playing with PostgreSQL scripts 
 
 Create the below files and populate them with the appropriate contents
 
-```list
-./db1/.pgpass - pgpass file for db1 image. Contains password entries for all users across all databases
-./db1/.postgres_password - password file for generating the db1 postgres user
-./db1/.pgbench_password - password file for generating the db1 pgbench user
-./db2/.pgpass - pgpass file for db2 image. Identical to db1/.pgpass
-./db3/.pgpass - pgpass file for db3 image. Identical to db1/.pgpass
-./db3/.postgres_password - password file for generating the db3 postgres user
-./db3/.pgbench_password - password file for generating the db3 pgbench user
-```
-
 ```shell
-$db1_postgres_pass="****************"
-$db1_pgbench_pass="****************"
-$db3_pgbench_pass="****************"
-$db3_postgres_pass="****************"
-$pgadmin_email="****************"
-$pgadmin_pass="****************"
+$postgres_pass="Remodeler-Reversal-Rectify-Thinner6"
+$pgbench_pass="Passcode-Elevation5-Discolor-Spiffy"
+$grafana_pass="Gliding-Jimmy-Thermal-Filling9"
+$pgadmin_email="chrismdollinger@gmail.com"
+$pgadmin_pass="Broadside-Fetal-Suffice-Zookeeper9"
 
-echo "$db1_postgres_pass" > ./db1/.postgres_password
-echo "$db1_postgres_pass" > ./db1/.postgres_password
-echo "$db1_pgbench_pass" > ./db1/.pgbench_password
-echo "$db3_postgres_pass" > ./db3/.postgres_password
-echo "$db3_pgbench_pass" > ./db3/.pgbench_password
+echo "POSTGRES_PASSWORD=$postgres_pass
+POSTGRES_USER=postgres
+POSTGRES_DB=postgres
+PGDATA=/var/lib/postgresql/data
+PGPORT=5432
+PGBENCH_PASSWORD=$pgbench_pass
+PGBENCH_USER=pgbench
+PGBENCH_DB=pgbench
+PGBENCH_SCALE=10
+GRAFANA_USER=grafana
+GRAFANA_PASSWORD=$grafana_pass
+" > ./db1/db1.env
+
+echo "POSTGRES_USER=postgres
+POSTGRES_DB=postgres
+PGDATA=/var/lib/postgresql/data
+PGPORT=5432
+POSTGRES_PRIMARY_HOST=pgdb1
+" > ./db2/db2.env
 
 echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
 PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
 PGPGASSFILE=/var/lib/pgadmin/storage/$($pgadmin_email.Replace('@','_'))/.pgpass" > ./pgadmin/pgadmin.env
 
-echo "pgdb1:5432:*:postgres:$db1_postgres_pass
-    pgdb2:5432:*:postgres:$db1_postgres_pass
-    pgdb3:5432:*:postgres:$db3_postgres_pass
-    pgdb1:5432:*:pgbench:$db1_pgbench_pass
-    pgdb2:5432:*:pgbench:$db1_pgbench_pass
-    pgdb3:5432:*:pgbench:$db3_pgbench_pass" > ./db1/.pgpass
+echo "pgdb1:5432:*:postgres:$postgres_pass
+pgdb2:5432:*:postgres:$postgres_pass
+pgdb1:5432:*:pgbench:$pgbench_pass
+pgdb2:5432:*:pgbench:$pgbench_pass
+pgdb1:5432:*:grafana:$grafana_pass
+pgdb2:5432:*:grafana:$grafana_pass" > ./db1/.pgpass
 cp ./db1/.pgpass ./db2/.pgpass
-cp ./db1/.pgpass ./db3/.pgpass
 cp ./db1/.pgpass ./pgadmin/.pgpass
+cp ./db1/.pgpass ./pgagent/.pgpass
+cp ./db1/.pgpass ./pgmetrics/.pgpass
+cp ./db1/.pgpass ./bash-pgscripts/.pgpass
 ```
 
 ### Create stack (requires building db1 image then deploying stack)
@@ -52,8 +57,9 @@ cp ./db1/.pgpass ./pgadmin/.pgpass
 ```sh
 docker image build --tag internal/db1 db1
 docker image build --tag internal/db2 db2
-docker image build --tag internal/db3 db3
 docker image build --tag internal/pgadmin pgadmin
+docker image build --tag internal/pgmetrics pgmetrics
+docker image build --tag internal/pgagent pgagent
 docker stack deploy --compose-file=docker-compose.yml pgdb-stack
 ```
 
@@ -67,5 +73,5 @@ docker stack rm pgdb-stack
 
 ```sh
 docker image build --tag internal/bash-pgscripts bash-pgscripts
-docker run -it --rm --network pgdb-stack_db-net --network-alias bash-manager internal/bash-pgscripts
+docker run --interactive --tty --rm --network pgdb-stack_db-net --network-alias bash-manager internal/bash-pgscripts
 ```

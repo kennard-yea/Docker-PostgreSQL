@@ -2,5 +2,5 @@
 .pgpass
 .postgres_password
 .pgbench_password
-pgadmin.env
+*.env
 .grafana_password
