@@ -37,7 +37,7 @@ POSTGRES_PRIMARY_HOST=pgdb1
 
 echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
 PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
-PGPGASSFILE=/var/lib/pgadmin/storage/$($pgadmin_email.Replace('@','_'))/.pgpass" > ./pgadmin/pgadmin.env
+PGPASSFILE=/var/lib/pgadmin/storage/$($pgadmin_email.Replace('@','_'))/.pgpass" > ./pgadmin/pgadmin.env
 
 echo "pgdb1:5432:*:postgres:$postgres_pass
 pgdb2:5432:*:postgres:$postgres_pass
