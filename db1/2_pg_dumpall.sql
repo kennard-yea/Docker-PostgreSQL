@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2022-03-20 19:29:31 UTC
+-- Started on 2022-03-25 16:05:04 UTC
 
 SET default_transaction_read_only = off;
 
@@ -44,7 +44,7 @@ GRANT pg_monitor TO grafana GRANTED BY postgres;
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-03-20 19:29:31 UTC
+-- Started on 2022-03-25 16:05:04 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -57,7 +57,24 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2022-03-20 19:29:31 UTC
+--
+-- TOC entry 2 (class 3079 OID 25025)
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- TOC entry 3320 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics of all SQL statements executed';
+
+
+-- Completed on 2022-03-25 16:05:05 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -74,7 +91,7 @@ SET row_security = off;
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-03-20 19:29:31 UTC
+-- Started on 2022-03-25 16:05:05 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -88,7 +105,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3339 (class 1262 OID 16386)
+-- TOC entry 3353 (class 1262 OID 16386)
 -- Name: grafana; Type: DATABASE; Schema: -; Owner: grafana
 --
 
@@ -111,7 +128,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 6 (class 2615 OID 16387)
+-- TOC entry 7 (class 2615 OID 16387)
 -- Name: pglogs; Type: SCHEMA; Schema: -; Owner: grafana
 --
 
@@ -121,7 +138,7 @@ CREATE SCHEMA pglogs;
 ALTER SCHEMA pglogs OWNER TO grafana;
 
 --
--- TOC entry 5 (class 2615 OID 16388)
+-- TOC entry 6 (class 2615 OID 16388)
 -- Name: pgmetrics; Type: SCHEMA; Schema: -; Owner: grafana
 --
 
@@ -131,7 +148,7 @@ CREATE SCHEMA pgmetrics;
 ALTER SCHEMA pgmetrics OWNER TO grafana;
 
 --
--- TOC entry 2 (class 3079 OID 16390)
+-- TOC entry 3 (class 3079 OID 16390)
 -- Name: file_fdw; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -139,8 +156,8 @@ CREATE EXTENSION IF NOT EXISTS file_fdw WITH SCHEMA public;
 
 
 --
--- TOC entry 3340 (class 0 OID 0)
--- Dependencies: 2
+-- TOC entry 3354 (class 0 OID 0)
+-- Dependencies: 3
 -- Name: EXTENSION file_fdw; Type: COMMENT; Schema: -; Owner: 
 --
 
@@ -148,7 +165,24 @@ COMMENT ON EXTENSION file_fdw IS 'foreign-data wrapper for flat file access';
 
 
 --
--- TOC entry 229 (class 1255 OID 16822)
+-- TOC entry 2 (class 3079 OID 33242)
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- TOC entry 3355 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics of all SQL statements executed';
+
+
+--
+-- TOC entry 232 (class 1255 OID 16822)
 -- Name: refresh_wal_metrics(); Type: PROCEDURE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -187,7 +221,7 @@ $$;
 ALTER PROCEDURE pgmetrics.refresh_wal_metrics() OWNER TO grafana;
 
 --
--- TOC entry 2040 (class 1417 OID 16394)
+-- TOC entry 2052 (class 1417 OID 16394)
 -- Name: pglog_server; Type: SERVER; Schema: -; Owner: postgres
 --
 
@@ -197,7 +231,7 @@ CREATE SERVER pglog_server FOREIGN DATA WRAPPER file_fdw;
 ALTER SERVER pglog_server OWNER TO postgres;
 
 --
--- TOC entry 212 (class 1259 OID 16395)
+-- TOC entry 213 (class 1259 OID 16395)
 -- Name: raw_metrics_id_seq; Type: SEQUENCE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -218,7 +252,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 213 (class 1259 OID 16396)
+-- TOC entry 214 (class 1259 OID 16396)
 -- Name: raw_metrics; Type: TABLE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -233,8 +267,8 @@ CREATE TABLE pgmetrics.raw_metrics (
 ALTER TABLE pgmetrics.raw_metrics OWNER TO grafana;
 
 --
--- TOC entry 3341 (class 0 OID 0)
--- Dependencies: 213
+-- TOC entry 3356 (class 0 OID 0)
+-- Dependencies: 214
 -- Name: COLUMN raw_metrics.cluster_name; Type: COMMENT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -242,7 +276,7 @@ COMMENT ON COLUMN pgmetrics.raw_metrics.cluster_name IS 'Arbitrary name of the h
 
 
 --
--- TOC entry 214 (class 1259 OID 16715)
+-- TOC entry 215 (class 1259 OID 16715)
 -- Name: wal_metrics; Type: TABLE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -265,7 +299,7 @@ PARTITION BY RANGE (collection_at);
 ALTER TABLE pgmetrics.wal_metrics OWNER TO grafana;
 
 --
--- TOC entry 215 (class 1259 OID 16737)
+-- TOC entry 216 (class 1259 OID 16737)
 -- Name: wal_metrics_default; Type: TABLE; Schema: pgmetrics; Owner: grafana
 --
 
@@ -287,7 +321,7 @@ CREATE TABLE pgmetrics.wal_metrics_default (
 ALTER TABLE pgmetrics.wal_metrics_default OWNER TO grafana;
 
 --
--- TOC entry 3183 (class 0 OID 0)
+-- TOC entry 3195 (class 0 OID 0)
 -- Name: wal_metrics_default; Type: TABLE ATTACH; Schema: pgmetrics; Owner: grafana
 --
 
@@ -295,7 +329,7 @@ ALTER TABLE ONLY pgmetrics.wal_metrics ATTACH PARTITION pgmetrics.wal_metrics_de
 
 
 --
--- TOC entry 3186 (class 2606 OID 16702)
+-- TOC entry 3198 (class 2606 OID 16702)
 -- Name: raw_metrics raw_metrics_collection_at_cluster_name_key; Type: CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -304,7 +338,7 @@ ALTER TABLE ONLY pgmetrics.raw_metrics
 
 
 --
--- TOC entry 3188 (class 2606 OID 16416)
+-- TOC entry 3200 (class 2606 OID 16416)
 -- Name: raw_metrics raw_metrics_pkey; Type: CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -313,7 +347,7 @@ ALTER TABLE ONLY pgmetrics.raw_metrics
 
 
 --
--- TOC entry 3190 (class 2606 OID 16719)
+-- TOC entry 3202 (class 2606 OID 16719)
 -- Name: wal_metrics wal_metrics_pkey; Type: CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -322,7 +356,7 @@ ALTER TABLE ONLY pgmetrics.wal_metrics
 
 
 --
--- TOC entry 3192 (class 2606 OID 16741)
+-- TOC entry 3204 (class 2606 OID 16741)
 -- Name: wal_metrics_default wal_metrics_default_pkey; Type: CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -331,7 +365,7 @@ ALTER TABLE ONLY pgmetrics.wal_metrics_default
 
 
 --
--- TOC entry 3193 (class 0 OID 0)
+-- TOC entry 3205 (class 0 OID 0)
 -- Name: wal_metrics_default_pkey; Type: INDEX ATTACH; Schema: pgmetrics; Owner: grafana
 --
 
@@ -339,7 +373,7 @@ ALTER INDEX pgmetrics.wal_metrics_pkey ATTACH PARTITION pgmetrics.wal_metrics_de
 
 
 --
--- TOC entry 3194 (class 2606 OID 16720)
+-- TOC entry 3206 (class 2606 OID 16720)
 -- Name: wal_metrics wal_metrics_collection_at_cluster_name_fkey; Type: FK CONSTRAINT; Schema: pgmetrics; Owner: grafana
 --
 
@@ -347,7 +381,7 @@ ALTER TABLE pgmetrics.wal_metrics
     ADD CONSTRAINT wal_metrics_collection_at_cluster_name_fkey FOREIGN KEY (collection_at, cluster_name) REFERENCES pgmetrics.raw_metrics(collection_at, cluster_name);
 
 
--- Completed on 2022-03-20 19:29:31 UTC
+-- Completed on 2022-03-25 16:05:05 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -364,7 +398,7 @@ ALTER TABLE pgmetrics.wal_metrics
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-03-20 19:29:31 UTC
+-- Started on 2022-03-25 16:05:05 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -378,7 +412,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3328 (class 1262 OID 16419)
+-- TOC entry 3342 (class 1262 OID 16419)
 -- Name: pgbench; Type: DATABASE; Schema: -; Owner: pgbench
 --
 
@@ -400,12 +434,29 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- TOC entry 2 (class 3079 OID 33217)
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- TOC entry 3343 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track planning and execution statistics of all SQL statements executed';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 211 (class 1259 OID 16603)
+-- TOC entry 212 (class 1259 OID 16603)
 -- Name: pgbench_accounts; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -421,7 +472,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_accounts OWNER TO pgbench;
 
 --
--- TOC entry 212 (class 1259 OID 16606)
+-- TOC entry 213 (class 1259 OID 16606)
 -- Name: pgbench_branches; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -436,7 +487,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_branches OWNER TO pgbench;
 
 --
--- TOC entry 209 (class 1259 OID 16597)
+-- TOC entry 210 (class 1259 OID 16597)
 -- Name: pgbench_history; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -453,7 +504,7 @@ CREATE TABLE public.pgbench_history (
 ALTER TABLE public.pgbench_history OWNER TO pgbench;
 
 --
--- TOC entry 210 (class 1259 OID 16600)
+-- TOC entry 211 (class 1259 OID 16600)
 -- Name: pgbench_tellers; Type: TABLE; Schema: public; Owner: pgbench
 --
 
@@ -469,7 +520,7 @@ WITH (fillfactor='100');
 ALTER TABLE public.pgbench_tellers OWNER TO pgbench;
 
 --
--- TOC entry 3181 (class 2606 OID 16618)
+-- TOC entry 3193 (class 2606 OID 16618)
 -- Name: pgbench_accounts pgbench_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -478,7 +529,7 @@ ALTER TABLE ONLY public.pgbench_accounts
 
 
 --
--- TOC entry 3183 (class 2606 OID 16614)
+-- TOC entry 3195 (class 2606 OID 16614)
 -- Name: pgbench_branches pgbench_branches_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -487,7 +538,7 @@ ALTER TABLE ONLY public.pgbench_branches
 
 
 --
--- TOC entry 3179 (class 2606 OID 16616)
+-- TOC entry 3191 (class 2606 OID 16616)
 -- Name: pgbench_tellers pgbench_tellers_pkey; Type: CONSTRAINT; Schema: public; Owner: pgbench
 --
 
@@ -495,7 +546,7 @@ ALTER TABLE ONLY public.pgbench_tellers
     ADD CONSTRAINT pgbench_tellers_pkey PRIMARY KEY (tid);
 
 
--- Completed on 2022-03-20 19:29:31 UTC
+-- Completed on 2022-03-25 16:05:05 UTC
 
 --
 -- PostgreSQL database dump complete
@@ -514,7 +565,7 @@ ALTER TABLE ONLY public.pgbench_tellers
 -- Dumped from database version 14.2 (Debian 14.2-1.pgdg110+1)
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-03-20 19:29:31 UTC
+-- Started on 2022-03-25 16:05:05 UTC
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -528,7 +579,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 7 (class 2615 OID 16438)
+-- TOC entry 10 (class 2615 OID 16438)
 -- Name: pgagent; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -538,12 +589,29 @@ CREATE SCHEMA pgagent;
 ALTER SCHEMA pgagent OWNER TO postgres;
 
 --
--- TOC entry 3427 (class 0 OID 0)
--- Dependencies: 7
+-- TOC entry 3446 (class 0 OID 0)
+-- Dependencies: 10
 -- Name: SCHEMA pgagent; Type: COMMENT; Schema: -; Owner: postgres
 --
 
 COMMENT ON SCHEMA pgagent IS 'pgAgent system tables';
+
+
+--
+-- TOC entry 4 (class 3079 OID 33287)
+-- Name: pg_buffercache; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_buffercache WITH SCHEMA public;
+
+
+--
+-- TOC entry 3447 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: EXTENSION pg_buffercache; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pg_buffercache IS 'examine the shared buffer cache';
 
 
 --
@@ -555,7 +623,7 @@ CREATE EXTENSION IF NOT EXISTS pgagent WITH SCHEMA pgagent;
 
 
 --
--- TOC entry 3428 (class 0 OID 0)
+-- TOC entry 3448 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION pgagent; Type: COMMENT; Schema: -; Owner: 
 --
@@ -563,13 +631,30 @@ CREATE EXTENSION IF NOT EXISTS pgagent WITH SCHEMA pgagent;
 COMMENT ON EXTENSION pgagent IS 'A PostgreSQL job scheduler';
 
 
--- Completed on 2022-03-20 19:29:31 UTC
+--
+-- TOC entry 3 (class 3079 OID 33277)
+-- Name: pgstattuple; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pgstattuple WITH SCHEMA public;
+
+
+--
+-- TOC entry 3449 (class 0 OID 0)
+-- Dependencies: 3
+-- Name: EXTENSION pgstattuple; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgstattuple IS 'show tuple-level statistics';
+
+
+-- Completed on 2022-03-25 16:05:05 UTC
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2022-03-20 19:29:31 UTC
+-- Completed on 2022-03-25 16:05:05 UTC
 
 --
 -- PostgreSQL database cluster dump complete
