@@ -306,7 +306,6 @@ _main() {
 
 			docker_init_database_dir
 			pg_setup_hba_conf
-      		mv /etc/postgresql/*.conf $PGDATA/ # set any custom configurations
 
 			# PGPASSWORD is required for psql when authentication is required for 'local' connections via pg_hba.conf and is otherwise harmless
 			# e.g. when '--auth=md5' or '--auth-local=md5' is used in POSTGRES_INITDB_ARGS
@@ -329,6 +328,7 @@ _main() {
 		fi
 	fi
 
+	mv /etc/postgresql/*.conf $PGDATA/ # set any custom configurations
 	exec "$@"
 }
 
