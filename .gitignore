@@ -4,3 +4,4 @@
 .pgbench_password
 *.env
 .grafana_password
+*.code-workspace
