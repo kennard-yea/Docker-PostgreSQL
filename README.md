@@ -9,11 +9,11 @@ Personal playground using Docker, primarily for playing with PostgreSQL scripts 
 Create the below files and populate them with the appropriate contents
 
 ```shell
-$postgres_pass="Remodeler-Reversal-Rectify-Thinner6"
-$pgbench_pass="Passcode-Elevation5-Discolor-Spiffy"
-$grafana_pass="Gliding-Jimmy-Thermal-Filling9"
-$pgadmin_email="chrismdollinger@gmail.com"
-$pgadmin_pass="Broadside-Fetal-Suffice-Zookeeper9"
+$postgres_pass="********"
+$pgbench_pass="********"
+$grafana_pass="********"
+$pgadmin_email="********"
+$pgadmin_pass="********"
 
 echo "POSTGRES_PASSWORD=$postgres_pass
 POSTGRES_USER=postgres
