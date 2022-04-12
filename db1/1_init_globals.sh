@@ -43,5 +43,3 @@ function main() {
 if [[ $0 != "/bin/bash" ]]; then
     main
 fi
-
-exit 0
