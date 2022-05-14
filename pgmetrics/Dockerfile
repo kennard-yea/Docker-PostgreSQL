@@ -11,5 +11,7 @@ COPY --chown=jobberuser:jobberuser .pgpass /home/jobberuser/
 COPY --chown=jobberuser:jobberuser pgmetrics_collect.sh /usr/local/bin/
 COPY --chown=jobberuser:jobberuser jobber-jobs.yaml /home/jobberuser/.jobber
 RUN chmod 600 /home/jobberuser/.pgpass
+RUN chmod 600 /home/jobberuser/.jobber
+RUN chmod -R 755 /usr/local/bin/ 
 RUN apk del --no-network .build-deps
 USER jobberuser
