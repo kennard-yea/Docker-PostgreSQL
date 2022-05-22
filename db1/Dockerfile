@@ -11,6 +11,7 @@ USER postgres
 COPY --chown=root:root docker-entrypoint.sh /usr/local/bin/
 COPY --chown=postgres:postgres 1_init_globals.sh /docker-entrypoint-initdb.d/
 COPY --chown=postgres:postgres 2_pg_dumpall.sql /docker-entrypoint-initdb.d/
-COPY --chown=postgres:postgres 3_init_pgbench.sh /docker-entrypoint-initdb.d/
+COPY --chown=postgres:postgres 3_stats_timeline.sql /docker-entrypoint-initdb.d/
+COPY --chown=postgres:postgres 4_init_pgbench.sh /docker-entrypoint-initdb.d/
 COPY --chown=postgres:postgres pg_hba.conf /etc/postgresql/
 COPY --chown=postgres:postgres postgresql.conf /etc/postgresql/
