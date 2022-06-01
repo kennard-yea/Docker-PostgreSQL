@@ -1,3 +1,5 @@
+\connect grafana
+
 CREATE SCHEMA stats_timeline;
 
 ALTER SCHEMA stats_timeline OWNER TO grafana;
@@ -286,7 +288,7 @@ ALTER TABLE stats_timeline.tl_stat_all_indexes OWNER TO grafana;
 ALTER TABLE stats_timeline.tl_stat_all_indexes_default OWNER TO grafana;
 
 ALTER TABLE stats_timeline.tl_stat_all_indexes
-    ADD CONSTRAINT tl_stat_all_indexes_pkey PRIMARY KEY (collected_at, relid);
+    ADD CONSTRAINT tl_stat_all_indexes_pkey PRIMARY KEY (collected_at, indexrelid);
 
 CREATE TABLE stats_timeline.tl_statio_all_tables_default AS
 SELECT
@@ -330,7 +332,7 @@ ALTER TABLE stats_timeline.tl_statio_all_indexes OWNER TO grafana;
 ALTER TABLE stats_timeline.tl_statio_all_indexes_default OWNER TO grafana;
 
 ALTER TABLE stats_timeline.tl_statio_all_indexes
-    ADD CONSTRAINT tl_statio_all_indexes_pkey PRIMARY KEY (collected_at, relid);
+    ADD CONSTRAINT tl_statio_all_indexes_pkey PRIMARY KEY (collected_at, indexrelid);
 
 CREATE TABLE stats_timeline.tl_statio_all_sequences_default AS
 SELECT
