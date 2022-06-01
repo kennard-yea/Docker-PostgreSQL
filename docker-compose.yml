@@ -56,26 +56,6 @@ services:
             db-net:
                 aliases:
                   - pgagent-db1
-    pgmetrics-db1:
-        image: internal/pgmetrics
-        environment:
-            SOURCE_HOST: pgdb1
-            PGHOST: pgdb1
-            PGUSER: postgres
-        networks:
-            db-net:
-                aliases:
-                  - pgmetrics-db1
-    pgmetrics-db2:
-        image: internal/pgmetrics
-        environment:
-            SOURCE_HOST: pgdb2
-            PGHOST: pgdb1
-            PGUSER: postgres
-        networks:
-            db-net:
-                aliases:
-                  - pgmetrics-db2
     grafana:
         image: grafana/grafana:main
         networks:
