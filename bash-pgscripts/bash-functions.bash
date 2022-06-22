@@ -4,6 +4,44 @@
 # THIS FILE IS A LIBRARY AND SHOULD ONLY CONTAIN FUNCTIONS
 #
 
+function Print-LogLinePrefix {
+  declare helpText='
+  \r\r NAME
+  \r    Print-LogLinePrefix
+  \r\n DESCRIPTION
+  \r    Prints the given prefix, with the below parameter expansions.
+  \r    For compatibility with PostgreSQL, most expansions will match or be similar to the escape sequences for the log_line_prefix parameter.
+  \r    Only the first of each parameter will be expanded.
+  \r      %%m and %%t - Current date and time as interpereted by the GNU date command
+  \r      %%p - Process PID as interpereted by the $$ variable
+  \r      %%u - Current user as interpereted by the whoami command
+  \r      %%h and %%r - Current hostname from the ${HOSTNAME} variable
+  \r      %%a - Current application being run as interpereted by the ${0} variable
+  \r\n USAGE
+  \r    Print-LogLinePrefix [logLinePrefix]
+  \r\n GLOBALS
+  \r    None
+  \r\n INPUTS
+  \r    The log line prefix to be expanded
+  \r\n OUTPUTS
+  \r    Outputs the modified line prefix
+  \r\n RETURNS
+  \r    Returns the result of the sed command used for parameter expansion
+  \r\n'
+  [[ ${1} == '--help' ]] && printf "${helpText}" && return 1
+  
+  sed -e "s/%m/$(date)/" \
+    -e "s/%t/$(date)/" \
+    -e "s/%p/$$/" \
+    -e "s/%u/$(whoami)/" \
+    -e "s/%h/$(hostname -s)/" \
+    -e "s/%r/$(hostname -s)/" \
+    -e "s/%a/${0}/" \
+    <<< ${@}
+
+  return ${?}
+}
+
 # USAGE: Time-Command [command]
 # Executes a command, command list, or pipeline and reports the runtime to STDERR once complete
 function Time-Command {
