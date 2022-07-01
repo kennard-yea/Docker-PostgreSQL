@@ -50,6 +50,7 @@ cp ./db1/.pgpass ./pgadmin/.pgpass
 cp ./db1/.pgpass ./pgagent/.pgpass
 cp ./db1/.pgpass ./pgmetrics/.pgpass
 cp ./db1/.pgpass ./bash-pgscripts/.pgpass
+cp ./db1/.pgpass ./pwsh-pgscripts/.pgpass
 ```
 
 ### Create stack (requires building db1 image then deploying stack)
