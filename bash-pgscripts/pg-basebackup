@@ -6,17 +6,16 @@
 # Import library functions and aliases
 source /var/lib/postgresql/lib/bash-functions.bash
 source /var/lib/postgresql/lib/postgres-functions.bash
-test_libsource || echo "Library import failed! Please check!" 1>&2 # && exit 1
 
 # Postgres-specific environment variables
-export PGHOST="pgdb1"
-export PGPORT="5432"
-export PGDATABASE="postgres"
-export PGUSER="postgres"
-export PGPASSFILE="/var/lib/postgresql/.pgpass"
+export PGHOST=""
+export PGPORT=""
+export PGDATABASE=""
+export PGUSER=""
+export PGPASSFILE=""
 
 # Other applicable globals
-export PATH="$PATH" # PATH environment placeholder
+export PATH="$PATH:/var/lib/postgresql/bin" # PATH environment placeholder
 
 # Script-specific global readonly
 readonly _pgssupportlist=("14" "13" "12" "11" "10" "9.6")

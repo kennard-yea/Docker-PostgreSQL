@@ -1,383 +1,570 @@
 \connect grafana
 
-CREATE SCHEMA stats_timeline;
+create schema stats_timeline;
 
-ALTER SCHEMA stats_timeline OWNER TO grafana;
+alter schema stats_timeline owner to grafana;
 
-CREATE TABLE stats_timeline.tl_stat_activity_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_activity_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_activity.*
-FROM
+from
     pg_catalog.pg_stat_activity
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_activity (
-    LIKE stats_timeline.tl_stat_activity_default
+create table stats_timeline.tl_stat_activity (
+    like stats_timeline.tl_stat_activity_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_activity ATTACH PARTITION stats_timeline.tl_stat_activity_default DEFAULT;
+alter table stats_timeline.tl_stat_activity attach partition stats_timeline.tl_stat_activity_default default;
 
-ALTER TABLE stats_timeline.tl_stat_activity OWNER TO grafana;
+alter table stats_timeline.tl_stat_activity owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_activity_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_activity_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_activity
-    ADD CONSTRAINT tl_stat_activity_pkey PRIMARY KEY (collected_at , pid);
-    
-CREATE TABLE stats_timeline.tl_stat_replication_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+alter table stats_timeline.tl_stat_activity
+    add constraint tl_stat_activity_pkey primary key (collected_at , pid);
+
+
+create table stats_timeline.tl_stat_replication_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_replication.*
-FROM
+from
     pg_catalog.pg_stat_replication 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_replication (
-    LIKE stats_timeline.tl_stat_replication_default
+create table stats_timeline.tl_stat_replication (
+    like stats_timeline.tl_stat_replication_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_replication ATTACH PARTITION stats_timeline.tl_stat_replication_default DEFAULT;
+alter table stats_timeline.tl_stat_replication attach partition stats_timeline.tl_stat_replication_default default;
 
-ALTER TABLE stats_timeline.tl_stat_replication OWNER TO grafana;
+alter table stats_timeline.tl_stat_replication owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_replication_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_replication_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_replication
-    ADD CONSTRAINT tl_stat_replication_pkey PRIMARY KEY (collected_at , pid);
+alter table stats_timeline.tl_stat_replication
+    add constraint tl_stat_replication_pkey primary key (collected_at , pid);
 
-CREATE TABLE stats_timeline.tl_stat_wal_receiver_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_wal_receiver_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_wal_receiver.*
-FROM
+from
     pg_catalog.pg_stat_wal_receiver 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_wal_receiver (
-    LIKE stats_timeline.tl_stat_wal_receiver_default
+create table stats_timeline.tl_stat_wal_receiver (
+    like stats_timeline.tl_stat_wal_receiver_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_wal_receiver ATTACH PARTITION stats_timeline.tl_stat_wal_receiver_default DEFAULT;
+alter table stats_timeline.tl_stat_wal_receiver attach partition stats_timeline.tl_stat_wal_receiver_default default;
 
-ALTER TABLE stats_timeline.tl_stat_wal_receiver OWNER TO grafana;
+alter table stats_timeline.tl_stat_wal_receiver owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_wal_receiver_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_wal_receiver_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_wal_receiver
-    ADD CONSTRAINT tl_stat_wal_receiver_pkey PRIMARY KEY (collected_at , pid);
-    
-CREATE TABLE stats_timeline.tl_stat_subscription_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+alter table stats_timeline.tl_stat_wal_receiver
+    add constraint tl_stat_wal_receiver_pkey primary key (collected_at , pid);
+
+
+create table stats_timeline.tl_stat_subscription_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_subscription.*
-FROM
+from
     pg_catalog.pg_stat_subscription 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_subscription (
-    LIKE stats_timeline.tl_stat_subscription_default
+create table stats_timeline.tl_stat_subscription (
+    like stats_timeline.tl_stat_subscription_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_subscription ATTACH PARTITION stats_timeline.tl_stat_subscription_default DEFAULT;
+alter table stats_timeline.tl_stat_subscription attach partition stats_timeline.tl_stat_subscription_default default;
 
-ALTER TABLE stats_timeline.tl_stat_subscription OWNER TO grafana;
+alter table stats_timeline.tl_stat_subscription owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_subscription_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_subscription_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_subscription
-    ADD CONSTRAINT tl_stat_subscription_pkey PRIMARY KEY (collected_at , subid);
-    
-CREATE TABLE stats_timeline.tl_stat_ssl_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+alter table stats_timeline.tl_stat_subscription
+    add constraint tl_stat_subscription_pkey primary key (collected_at , subid);
+
+
+create table stats_timeline.tl_stat_ssl_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_ssl.*
-FROM
+from
     pg_catalog.pg_stat_ssl 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_ssl (
-    LIKE stats_timeline.tl_stat_ssl_default
+create table stats_timeline.tl_stat_ssl (
+    like stats_timeline.tl_stat_ssl_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_ssl ATTACH PARTITION stats_timeline.tl_stat_ssl_default DEFAULT;
+alter table stats_timeline.tl_stat_ssl attach partition stats_timeline.tl_stat_ssl_default default;
 
-ALTER TABLE stats_timeline.tl_stat_ssl OWNER TO grafana;
+alter table stats_timeline.tl_stat_ssl owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_ssl_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_ssl_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_ssl
-    ADD CONSTRAINT tl_stat_ssl_pkey PRIMARY KEY (collected_at , pid);
+alter table stats_timeline.tl_stat_ssl
+    add constraint tl_stat_ssl_pkey primary key (collected_at , pid);
 
-CREATE TABLE stats_timeline.tl_stat_gssapi_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_gssapi_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_gssapi.*
-FROM
+from
     pg_catalog.pg_stat_gssapi 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_gssapi (
-    LIKE stats_timeline.tl_stat_gssapi_default
+create table stats_timeline.tl_stat_gssapi (
+    like stats_timeline.tl_stat_gssapi_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_gssapi ATTACH PARTITION stats_timeline.tl_stat_gssapi_default DEFAULT;
+alter table stats_timeline.tl_stat_gssapi attach partition stats_timeline.tl_stat_gssapi_default default;
 
-ALTER TABLE stats_timeline.tl_stat_gssapi OWNER TO grafana;
+alter table stats_timeline.tl_stat_gssapi owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_gssapi_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_gssapi_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_gssapi
-    ADD CONSTRAINT tl_stat_gssapi_pkey PRIMARY KEY (collected_at , pid);
+alter table stats_timeline.tl_stat_gssapi
+    add constraint tl_stat_gssapi_pkey primary key (collected_at , pid);
 
-CREATE TABLE stats_timeline.tl_stat_archiver_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_archiver_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_archiver.*
-FROM
+from
     pg_catalog.pg_stat_archiver 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_archiver (
-    LIKE stats_timeline.tl_stat_archiver_default
+create table stats_timeline.tl_stat_archiver (
+    like stats_timeline.tl_stat_archiver_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_archiver ATTACH PARTITION stats_timeline.tl_stat_archiver_default DEFAULT;
+alter table stats_timeline.tl_stat_archiver attach partition stats_timeline.tl_stat_archiver_default default;
 
-ALTER TABLE stats_timeline.tl_stat_archiver OWNER TO grafana;
+alter table stats_timeline.tl_stat_archiver owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_archiver_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_archiver_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_archiver
-    ADD CONSTRAINT tl_stat_archiver_pkey PRIMARY KEY (collected_at);
+alter table stats_timeline.tl_stat_archiver
+    add constraint tl_stat_archiver_pkey primary key (collected_at);
 
-CREATE TABLE stats_timeline.tl_stat_bgwriter_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_bgwriter_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_bgwriter.*
-FROM
+from
     pg_catalog.pg_stat_bgwriter 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_bgwriter (
-    LIKE stats_timeline.tl_stat_bgwriter_default
+create table stats_timeline.tl_stat_bgwriter (
+    like stats_timeline.tl_stat_bgwriter_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_bgwriter ATTACH PARTITION stats_timeline.tl_stat_bgwriter_default DEFAULT;
+alter table stats_timeline.tl_stat_bgwriter attach partition stats_timeline.tl_stat_bgwriter_default default;
 
-ALTER TABLE stats_timeline.tl_stat_bgwriter OWNER TO grafana;
+alter table stats_timeline.tl_stat_bgwriter owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_bgwriter_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_bgwriter_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_bgwriter
-    ADD CONSTRAINT tl_stat_bgwriter_pkey PRIMARY KEY (collected_at);
+alter table stats_timeline.tl_stat_bgwriter
+    add constraint tl_stat_bgwriter_pkey primary key (collected_at);
 
-CREATE TABLE stats_timeline.tl_stat_wal_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_wal_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_wal.*
-FROM
+from
     pg_catalog.pg_stat_wal 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_wal (
-    LIKE stats_timeline.tl_stat_wal_default
+create table stats_timeline.tl_stat_wal (
+    like stats_timeline.tl_stat_wal_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_wal ATTACH PARTITION stats_timeline.tl_stat_wal_default DEFAULT;
+alter table stats_timeline.tl_stat_wal attach partition stats_timeline.tl_stat_wal_default default;
 
-ALTER TABLE stats_timeline.tl_stat_wal OWNER TO grafana;
+alter table stats_timeline.tl_stat_wal owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_wal_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_wal_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_wal
-    ADD CONSTRAINT tl_stat_wal_pkey PRIMARY KEY (collected_at);
+alter table stats_timeline.tl_stat_wal
+    add constraint tl_stat_wal_pkey primary key (collected_at);
 
-CREATE TABLE stats_timeline.tl_stat_database_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_database_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_database.*
-FROM
+from
     pg_catalog.pg_stat_database 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_database (
-    LIKE stats_timeline.tl_stat_database_default
+create table stats_timeline.tl_stat_database (
+    like stats_timeline.tl_stat_database_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_database ATTACH PARTITION stats_timeline.tl_stat_database_default DEFAULT;
+alter table stats_timeline.tl_stat_database attach partition stats_timeline.tl_stat_database_default default;
 
-ALTER TABLE stats_timeline.tl_stat_database OWNER TO grafana;
+alter table stats_timeline.tl_stat_database owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_database_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_database_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_database
-    ADD CONSTRAINT tl_stat_database_pkey PRIMARY KEY (collected_at, datid);
+alter table stats_timeline.tl_stat_database
+    add constraint tl_stat_database_pkey primary key (collected_at, datid);
 
-CREATE TABLE stats_timeline.tl_stat_database_conflicts_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_database_conflicts_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_database_conflicts.*
-FROM
+from
     pg_catalog.pg_stat_database_conflicts
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_database_conflicts (
-    LIKE stats_timeline.tl_stat_database_conflicts_default
+create table stats_timeline.tl_stat_database_conflicts (
+    like stats_timeline.tl_stat_database_conflicts_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_database_conflicts ATTACH PARTITION stats_timeline.tl_stat_database_conflicts_default DEFAULT;
+alter table stats_timeline.tl_stat_database_conflicts attach partition stats_timeline.tl_stat_database_conflicts_default default;
 
-ALTER TABLE stats_timeline.tl_stat_database_conflicts OWNER TO grafana;
+alter table stats_timeline.tl_stat_database_conflicts owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_database_conflicts_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_database_conflicts_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_database_conflicts
-    ADD CONSTRAINT tl_stat_database_conflicts_pkey PRIMARY KEY (collected_at, datid);
+alter table stats_timeline.tl_stat_database_conflicts
+    add constraint tl_stat_database_conflicts_pkey primary key (collected_at, datid);
 
-CREATE TABLE stats_timeline.tl_stat_all_tables_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_all_tables_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_all_tables.*
-FROM
+from
     pg_catalog.pg_stat_all_tables 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_all_tables (
-    LIKE stats_timeline.tl_stat_all_tables_default
+create table stats_timeline.tl_stat_all_tables (
+    like stats_timeline.tl_stat_all_tables_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_all_tables ATTACH PARTITION stats_timeline.tl_stat_all_tables_default DEFAULT;
+alter table stats_timeline.tl_stat_all_tables attach partition stats_timeline.tl_stat_all_tables_default default;
 
-ALTER TABLE stats_timeline.tl_stat_all_tables OWNER TO grafana;
+alter table stats_timeline.tl_stat_all_tables owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_all_tables_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_all_tables_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_all_tables
-    ADD CONSTRAINT tl_stat_all_tables_pkey PRIMARY KEY (collected_at, relid);
+alter table stats_timeline.tl_stat_all_tables
+    add constraint tl_stat_all_tables_pkey primary key (collected_at, relid);
 
-CREATE TABLE stats_timeline.tl_stat_all_indexes_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_all_indexes_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_all_indexes.*
-FROM
+from
     pg_catalog.pg_stat_all_indexes 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_all_indexes (
-    LIKE stats_timeline.tl_stat_all_indexes_default
+create table stats_timeline.tl_stat_all_indexes (
+    like stats_timeline.tl_stat_all_indexes_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_all_indexes ATTACH PARTITION stats_timeline.tl_stat_all_indexes_default DEFAULT;
+alter table stats_timeline.tl_stat_all_indexes attach partition stats_timeline.tl_stat_all_indexes_default default;
 
-ALTER TABLE stats_timeline.tl_stat_all_indexes OWNER TO grafana;
+alter table stats_timeline.tl_stat_all_indexes owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_all_indexes_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_all_indexes_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_all_indexes
-    ADD CONSTRAINT tl_stat_all_indexes_pkey PRIMARY KEY (collected_at, indexrelid);
+alter table stats_timeline.tl_stat_all_indexes
+    add constraint tl_stat_all_indexes_pkey primary key (collected_at, indexrelid);
 
-CREATE TABLE stats_timeline.tl_statio_all_tables_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_statio_all_tables_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_statio_all_tables.*
-FROM
+from
     pg_catalog.pg_statio_all_tables 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_statio_all_tables (
-    LIKE stats_timeline.tl_statio_all_tables_default
+create table stats_timeline.tl_statio_all_tables (
+    like stats_timeline.tl_statio_all_tables_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_statio_all_tables ATTACH PARTITION stats_timeline.tl_statio_all_tables_default DEFAULT;
+alter table stats_timeline.tl_statio_all_tables attach partition stats_timeline.tl_statio_all_tables_default default;
 
-ALTER TABLE stats_timeline.tl_statio_all_tables OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_tables owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_tables_default OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_tables_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_tables
-    ADD CONSTRAINT tl_statio_all_tables_pkey PRIMARY KEY (collected_at, relid);
+alter table stats_timeline.tl_statio_all_tables
+    add constraint tl_statio_all_tables_pkey primary key (collected_at, relid);
 
-CREATE TABLE stats_timeline.tl_statio_all_indexes_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_statio_all_indexes_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_statio_all_indexes.*
-FROM
+from
     pg_catalog.pg_statio_all_indexes 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_statio_all_indexes (
-    LIKE stats_timeline.tl_statio_all_indexes_default
+create table stats_timeline.tl_statio_all_indexes (
+    like stats_timeline.tl_statio_all_indexes_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_statio_all_indexes ATTACH PARTITION stats_timeline.tl_statio_all_indexes_default DEFAULT;
+alter table stats_timeline.tl_statio_all_indexes attach partition stats_timeline.tl_statio_all_indexes_default default;
 
-ALTER TABLE stats_timeline.tl_statio_all_indexes OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_indexes owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_indexes_default OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_indexes_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_indexes
-    ADD CONSTRAINT tl_statio_all_indexes_pkey PRIMARY KEY (collected_at, indexrelid);
+alter table stats_timeline.tl_statio_all_indexes
+    add constraint tl_statio_all_indexes_pkey primary key (collected_at, indexrelid);
 
-CREATE TABLE stats_timeline.tl_statio_all_sequences_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_statio_all_sequences_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_statio_all_sequences.*
-FROM
+from
     pg_catalog.pg_statio_all_sequences 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_statio_all_sequences (
-    LIKE stats_timeline.tl_statio_all_sequences_default
+create table stats_timeline.tl_statio_all_sequences (
+    like stats_timeline.tl_statio_all_sequences_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_statio_all_sequences ATTACH PARTITION stats_timeline.tl_statio_all_sequences_default DEFAULT;
+alter table stats_timeline.tl_statio_all_sequences attach partition stats_timeline.tl_statio_all_sequences_default default;
 
-ALTER TABLE stats_timeline.tl_statio_all_sequences OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_sequences owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_sequences_default OWNER TO grafana;
+alter table stats_timeline.tl_statio_all_sequences_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_statio_all_sequences
-    ADD CONSTRAINT tl_statio_all_sequences_pkey PRIMARY KEY (collected_at, relid);
+alter table stats_timeline.tl_statio_all_sequences
+    add constraint tl_statio_all_sequences_pkey primary key (collected_at, relid);
 
-CREATE TABLE stats_timeline.tl_stat_slru_default AS
-SELECT
-    pg_catalog.now() AS collected_at
+
+create table stats_timeline.tl_stat_slru_default as
+select
+    pg_catalog.now() as collected_at
     , pg_catalog.pg_stat_slru.*
-FROM
+from
     pg_catalog.pg_stat_slru 
-WITH NO DATA;
+with no data;
 
-CREATE TABLE stats_timeline.tl_stat_slru (
-    LIKE stats_timeline.tl_stat_slru_default
+create table stats_timeline.tl_stat_slru (
+    like stats_timeline.tl_stat_slru_default
 )
-PARTITION BY RANGE (collected_at);
+partition by range (collected_at);
 
-ALTER TABLE stats_timeline.tl_stat_slru ATTACH PARTITION stats_timeline.tl_stat_slru_default DEFAULT;
+alter table stats_timeline.tl_stat_slru attach partition stats_timeline.tl_stat_slru_default default;
 
-ALTER TABLE stats_timeline.tl_stat_slru OWNER TO grafana;
+alter table stats_timeline.tl_stat_slru owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_slru_default OWNER TO grafana;
+alter table stats_timeline.tl_stat_slru_default owner to grafana;
 
-ALTER TABLE stats_timeline.tl_stat_slru
-    ADD CONSTRAINT tl_stat_slru_pkey PRIMARY KEY (collected_at, name);
+alter table stats_timeline.tl_stat_slru
+    add constraint tl_stat_slru_pkey primary key (collected_at, name);
 
-GRANT USAGE ON SCHEMA stats_timeline TO pg_monitor;
 
-GRANT SELECT ON ALL TABLES IN SCHEMA stats_timeline TO pg_monitor;
+create function stats_timeline.snapshot_pg_stat_activity() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_activity
+select current_timestamp,
+	pg_stat_activity.*
+from pg_catalog.pg_stat_activity on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_activity() owner to grafana;
+
+create function stats_timeline.snapshot_pg_stat_all_indexes() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_all_indexes
+select current_timestamp,
+	pg_stat_all_indexes.*
+from pg_catalog.pg_stat_all_indexes on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_all_indexes() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_all_tables() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_all_tables
+select current_timestamp,
+	pg_stat_all_tables.*
+from pg_catalog.pg_stat_all_tables on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_all_tables() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_archiver() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_archiver
+select current_timestamp,
+	pg_stat_archiver.*
+from pg_catalog.pg_stat_archiver on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_archiver() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_bgwriter() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_bgwriter
+select current_timestamp,
+	pg_stat_bgwriter.*
+from pg_catalog.pg_stat_bgwriter on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_bgwriter() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_database() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_database
+select current_timestamp,
+	pg_stat_database.*
+from pg_catalog.pg_stat_database on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_database() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_database_conflicts() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_database_conflicts
+select current_timestamp,
+	pg_stat_database_conflicts.*
+from pg_catalog.pg_stat_database_conflicts on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_database_conflicts() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_gssapi() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_gssapi
+select current_timestamp,
+	pg_stat_gssapi.*
+from pg_catalog.pg_stat_gssapi on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_gssapi() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_replication() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_replication
+select current_timestamp,
+	pg_stat_replication.*
+from pg_catalog.pg_stat_replication on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_replication() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_slru() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_slru
+select current_timestamp,
+	pg_stat_slru.*
+from pg_catalog.pg_stat_slru on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_slru() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_ssl() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_ssl
+select current_timestamp,
+	pg_stat_ssl.*
+from pg_catalog.pg_stat_ssl on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_ssl() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_subscription() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_subscription
+select current_timestamp,
+	pg_stat_subscription.*
+from pg_catalog.pg_stat_subscription on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_subscription() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_wal() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_wal
+select current_timestamp,
+	pg_stat_wal.*
+from pg_catalog.pg_stat_wal on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_wal() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_stat_wal_receiver() returns void
+    language sql
+    as $$insert into stats_timeline.tl_stat_wal_receiver
+select current_timestamp,
+	pg_stat_wal_receiver.*
+from pg_catalog.pg_stat_wal_receiver on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_stat_wal_receiver() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_statio_all_indexes() returns void
+    language sql
+    as $$insert into stats_timeline.tl_statio_all_indexes
+select current_timestamp,
+	pg_statio_all_indexes.*
+from pg_catalog.pg_statio_all_indexes on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_statio_all_indexes() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_statio_all_sequences() returns void
+    language sql
+    as $$insert into stats_timeline.tl_statio_all_sequences
+select current_timestamp,
+	pg_statio_all_sequences.*
+from pg_catalog.pg_statio_all_sequences on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_statio_all_sequences() owner to grafana;
+
+
+create function stats_timeline.snapshot_pg_statio_all_tables() returns void
+    language sql
+    as $$insert into stats_timeline.tl_statio_all_tables
+select current_timestamp,
+	pg_statio_all_tables.*
+from pg_catalog.pg_statio_all_tables on conflict do nothing;$$;
+
+alter function stats_timeline.snapshot_pg_statio_all_tables() owner to grafana;
+
+
+grant usage on schema stats_timeline to pg_monitor;
+
+grant select on all tables in schema stats_timeline to pg_monitor;
