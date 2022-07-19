@@ -9,34 +9,39 @@ function Print-LogLinePrefix {
   \r\r NAME
   \r    Print-LogLinePrefix
   \r\n DESCRIPTION
-  \r    Prints the given prefix, with the below parameter expansions.
+  \r    Prints the prefix from input, with the below parameter expansions. Can be used later with sed or awk to prepend to log output
   \r    For compatibility with PostgreSQL, most expansions will match or be similar to the escape sequences for the log_line_prefix parameter.
   \r    Only the first of each parameter will be expanded.
   \r      %%m and %%t - Current date and time as interpereted by the GNU date command
   \r      %%p - Process PID as interpereted by the $$ variable
   \r      %%u - Current user as interpereted by the whoami command
-  \r      %%h and %%r - Current hostname from the ${HOSTNAME} variable
+  \r      %%h and %%r - Current hostname as interpereted by the hostname command
   \r      %%a - Current application being run as interpereted by the ${0} variable
+  \r      %%d - Current PGDATABASE environment variable, or currentn user as interpereted by the whoami command (represents how postgres utilities will default to the logged in username)
+  \r      %%q - In PostgreSQL tells non-session processes to stop, ignored in this function
   \r\n USAGE
   \r    Print-LogLinePrefix [logLinePrefix]
   \r\n GLOBALS
   \r    None
   \r\n INPUTS
-  \r    The log line prefix to be expanded
+  \r    (Required) The log line prefix to be expanded
   \r\n OUTPUTS
   \r    Outputs the modified line prefix
   \r\n RETURNS
   \r    Returns the result of the sed command used for parameter expansion
   \r\n'
   [[ ${1} == '--help' ]] && printf "${helpText}" && return 1
-  
-  sed -e "s/%m/$(date)/" \
-    -e "s/%t/$(date)/" \
-    -e "s/%p/$$/" \
-    -e "s/%u/$(whoami)/" \
-    -e "s/%h/$(hostname -s)/" \
-    -e "s/%r/$(hostname -s)/" \
-    -e "s/%a/${0}/" \
+
+  # PGDATABASE will default to the logged in user's name, %d should too
+  # Some escape sequences don't translate well from postgres to bash and should be ignored (%q)
+  sed -re "s/%m/$(date +'%F %T')/g" \
+    -re "s/%t/$(date) +'%F %T'/g" \
+    -re "s/%p/$$/g" \
+    -re "s/%u/$(whoami)/g" \
+    -re "s/%(h|r)/$(hostname -s)/g" \
+    -re "s/%a/${0}/g" \
+    -re "s/%d/${PGDATABASE:-$(whoami)}/g" \
+    -re "s/%(q)//g" \
     <<< ${@}
 
   return ${?}
