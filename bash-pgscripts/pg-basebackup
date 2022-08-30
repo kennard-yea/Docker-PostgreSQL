@@ -7,13 +7,6 @@
 source /var/lib/postgresql/lib/bash-functions.bash
 source /var/lib/postgresql/lib/postgres-functions.bash
 
-# Postgres-specific environment variables
-export PGHOST=""
-export PGPORT=""
-export PGDATABASE=""
-export PGUSER=""
-export PGPASSFILE=""
-
 # Other applicable globals
 export PATH="$PATH:/var/lib/postgresql/bin" # PATH environment placeholder
 
@@ -26,133 +19,116 @@ declare _pgscluster
 declare -l _xlog_or_wal
 
 # Script-specific modifiable globals modified by execution options
-declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
+declare pgsbkupdir="/var/lib/postgresql/backup/base/%version%/%cluster%/"           # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
 declare pgswalarchdir="/var/lib/postgresql/backup/wal_archive/%version%/%cluster%/" # Specifiy %version% and %cluster% in order to dynamically add version number and cluster name
 declare -l wal_method="fetch"
 declare -i compress_level="0"
 
-function usage()
-{
-    echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method] [-z compress_level]
+function usage() {
+  echo "Usage: pg-basebackup [-D pgsbkupdir] [-W pgswalarchdir] [-x wal_method] [-z compress_level]
     " 1>&2
-    exit 1
+  exit 1
 }
 
-function check_environment()
-{
-    _pgsversion="$(Get-PgVersion)" || return 1
-    _pgscluster="$(Get-PgClusterName)" || return 1
+function check_environment() {
+  _pgsversion="$(Get-PgVersion)" || return 1
+  _pgscluster="$(Get-PgClusterName)" || return 1
 
-    # Reference for version detection https://why-upgrade.depesz.com/show?from=9.6&to=14&keywords=pg_basebackup
-    case ${_pgsversion} in
-        "9.6")
-            _xlog_or_wal="xlog"
-        ;;
-        "10"|"11"|"12"|"13"|"14")
-            _xlog_or_wal="wal"
-        ;;
-        *)
-            echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
-        ;;
-    esac
+  # Reference for version detection https://why-upgrade.depesz.com/show?from=9.6&to=14&keywords=pg_basebackup
+  case ${_pgsversion} in
+  "9.6")
+    _xlog_or_wal="xlog"
+    ;;
+  "10" | "11" | "12" | "13" | "14")
+    _xlog_or_wal="wal"
+    ;;
+  *)
+    echo "PostgreSQL Version ${_pgsversion} is not supported or is invalid!" 1>&2 && return 1
+    ;;
+  esac
 
-    return 0
-}
-
-function initialize_backupdirs()
-{
-    function initialize_backupdirs_usage() {
-        echo "Usage: initialize_backupdirs [pgsbkupdir] [pgswalarchdir]
-        "
-    }
-    local returncode=0
-    local pgs_bkupdir=${1:-"${HOME}/backup/base/%version%/%cluster%/"}
-    local pgs_walarchdir=${2:-"${HOME}/backup/wal_archive/%version%/%cluster%/"}
-
-    mkdir -p ${pgs_bkupdir} || returncode=$(( ${returncode} + 1 ))
-    mkdir -p ${pgs_walarchdir} || returncode=$(( ${returncode} + 1 ))
-    return ${returncode}
+  return 0
 }
 
 # run_backup expects postgres connectivity environment to be set (PGHOST, PGPORT, PGUSER)
-function run_basebackup()
-{
-    function run_basebackup_usage() {
-        echo "Usage: run_basebackup {backupdest} {walmethod} {xlogorwal} {compresslevel}
+function run_basebackup() {
+  function run_basebackup_usage() {
+    echo "Usage: run_basebackup {backupdest} {walmethod} {xlogorwal} {compresslevel}
         " 1>&2
-    }
+  }
 
-    declare backupdest=${1}
-    declare -l walmethod=${2}
-    declare -l xlogorwal=${3}
-    declare -i compresslevel=${4}
-    declare -i returncode="0"
-    declare now="$(date +%F)"
+  declare backupdest=${1}
+  declare -l walmethod=${2}
+  declare -l xlogorwal=${3}
+  declare -i compresslevel=${4}
+  declare -i returncode="0"
+  declare now="$(date +%F_%H%M%S)"
 
-    Time-Command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
-        --${xlogorwal}-method=${walmethod} \
-        --gzip --compress=${compresslevel} \
-        --progress --verbose --no-password
-    
-    returncode=$?
-    case ${returncode} in
-        0)
-            /bin/true
-        ;;
-        *)
-            run_basebackup_usage
-        ;;
-    esac
+  Time-Command pg_basebackup --pgdata=${backupdest}/${now} --format=tar \
+    --${xlogorwal}-method=${walmethod} \
+    --gzip --compress=${compresslevel} \
+    --progress --verbose --no-password
 
-    return $?
+  returncode=$?
+  case ${returncode} in
+  0)
+    /bin/true
+    ;;
+  *)
+    run_basebackup_usage
+    ;;
+  esac
+
+  return $?
 }
 
 # File Main
 if [[ "${0}" =~ ^.*pg-basebackup$ ]]; then
   while getopts ":D:W:x:z:h:p:d:U:f:" option; do
     case "${option}" in
-      D)
-        pgsbkupdir=${OPTARG}
+    D)
+      pgsbkupdir=${OPTARG}
       ;;
-      W)
-        pgswalarchdir=${OPTARG}
+    W)
+      pgswalarchdir=${OPTARG}
       ;;
-      x)
-        wal_method=${OPTARG}
+    x)
+      wal_method=${OPTARG}
       ;;
-      z)
-        compress_level=${OPTARG}
+    z)
+      compress_level=${OPTARG}
       ;;
-      h)
-        export PGHOST="${OPTARG}"
+    h)
+      export PGHOST="${OPTARG}"
       ;;
-      p)
-        export PGPORT="${OPTARG}"
+    p)
+      export PGPORT="${OPTARG}"
       ;;
-      d)
-        export PGDATABASE="${OPTARG}"
+    d)
+      export PGDATABASE="${OPTARG}"
       ;;
-      U)
-        export PGUSER="${OPTARG}"
+    U)
+      export PGUSER="${OPTARG}"
       ;;
-      f)
-        export PGPASSFILE="${OPTARG}"
+    f)
+      export PGPASSFILE="${OPTARG}"
       ;;
-      *)
-        usage
-        exit 1
+    *)
+      usage
+      exit 1
       ;;
     esac
   done
 
-    check_environment
+  check_environment || exit 1
 
-    pgsbkupdir=${pgsbkupdir/'%version%'/${_pgsversion}}
-    pgsbkupdir=${pgsbkupdir/'%cluster%'/${_pgscluster}}
-    pgswalarchdir=${pgswalarchdir/'%version%'/${_pgsversion}}
-    pgswalarchdir=${pgswalarchdir/'%cluster%'/${_pgscluster}}
+  pgsbkupdir=${pgsbkupdir/'%version%'/${_pgsversion}}
+  pgsbkupdir=${pgsbkupdir/'%cluster%'/${_pgscluster:-"${PGPORT:-"5432"}"}}
+  pgswalarchdir=${pgswalarchdir/'%version%'/${_pgsversion}}
+  pgswalarchdir=${pgswalarchdir/'%cluster%'/${_pgscluster:-"${PGPORT:-"5432"}"}}
 
-    initialize_backupdirs ${pgsbkupdir} ${pgswalarchdir}
-    run_basebackup ${pgsbkupdir} ${wal_method} ${_xlog_or_wal} ${compress_level}
-    exit 0
+  mkdir -vp ${pgsbkupdir}
+  mkdir -vp ${pgswalarchdir}
+  run_basebackup ${pgsbkupdir} ${wal_method} ${_xlog_or_wal} ${compress_level}
+  exit 0
 fi
