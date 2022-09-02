@@ -49,8 +49,6 @@ cp ./db1/.pgpass ./db2/.pgpass
 cp ./db1/.pgpass ./pgadmin/.pgpass
 cp ./db1/.pgpass ./pgagent/.pgpass
 cp ./db1/.pgpass ./pgmetrics/.pgpass
-cp ./db1/.pgpass ./bash-pgscripts/.pgpass
-cp ./db1/.pgpass ./pwsh-pgscripts/.pgpass
 ```
 
 ### Create stack (requires building db1 image then deploying stack)
@@ -68,11 +66,4 @@ docker stack deploy --compose-file=docker-compose.yml pgdb-stack
 
 ```sh
 docker stack rm pgdb-stack
-```
-
-## Run bash image
-
-```sh
-docker image build --tag internal/bash-pgscripts bash-pgscripts
-docker run --interactive --tty --rm --network pgdb-stack_db-net --network-alias bash-manager internal/bash-pgscripts
 ```
