@@ -5,3 +5,4 @@
 *.env
 .grafana_password
 *.code-workspace
+.vscode/*
