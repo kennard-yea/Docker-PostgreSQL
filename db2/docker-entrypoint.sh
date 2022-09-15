@@ -90,6 +90,7 @@ docker_init_database_dir() {
 
 	# eval 'initdb --username="$POSTGRES_USER" --pwfile=<(echo "$POSTGRES_PASSWORD") '"$POSTGRES_INITDB_ARGS"' "$@"'
 	rm -rf "$PGDATA/*" "$POSTGRES_INITDB_WALDIR/*"
+	sleep 60
 	eval 'pg_basebackup --dbname="host=$POSTGRES_PRIMARY_HOST user=$POSTGRES_USER port=$PGPORT dbname=$POSTGRES_DB passfile=/var/lib/postgresql/.pgpass" --pgdata="$PGDATA" --write-recovery-conf --wal-method=stream --checkpoint=fast "$@"'
 
 	# unset/cleanup "nss_wrapper" bits
