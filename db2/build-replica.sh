@@ -18,11 +18,11 @@ new_pgpass() {
 check_primary() {
     for (( i=1; i<=12; i++ )); do
         psql -v ON_ERROR_STOP=1 --no-password --no-psqlrc --dbname="${PRIMARY_DBNAME}" -c "select null" >/dev/null && return 0 || \
-            echo "Unable to connect with dbname \"${PRIMARY_DBNAME}\" - sleeping for 10 seconds"
+            echo "Unable to connect with dbname \"${PRIMARY_DBNAME}\" - sleeping for 10 seconds" 1>&2
         sleep 10
     done
 
-    echo "Connection to \"${PRIMARY_DBNAME}\" timed out after 120 seconds!"
+    echo "Connection to \"${PRIMARY_DBNAME}\" timed out after 120 seconds!" 1>&2
 
     return 1
 }
@@ -40,10 +40,12 @@ else
     docker_temp_server_stop
     rm -rf $PGDATA
 
-    if [ ! -r "$PGDATA/.pgpass" ]; then
+    if [ ! -r "$HOME/.pgpass" ]; then
         new_pgpass
     fi
 
+    echo "Giving the primary time to initialize..."
+    sleep 60
     check_primary || exit 1
 
    	if [ -n "${POSTGRES_INITDB_WALDIR:-}" ]; then
