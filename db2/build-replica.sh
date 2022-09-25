@@ -1,6 +1,21 @@
 #!/bin/bash
 set -xEeo pipefail
 
+docker_temp_server_start() {
+	if [ "$1" = 'postgres' ]; then
+		shift
+	fi
+
+	# internal start of server in order to allow setup using psql client
+	# does not listen on external TCP/IP and waits until start finishes
+	set -- "$@" -c listen_addresses='' -p "${PGPORT:-5432}"
+
+	PGUSER="${PGUSER:-$POSTGRES_USER}" \
+	pg_ctl -D "$PGDATA" \
+		-o "$(printf '%q ' "$@")" \
+		-w start
+}
+
 docker_temp_server_stop() {
 	PGUSER="${PGUSER:-postgres}" \
 	pg_ctl -D "$PGDATA" -m fast -w stop
@@ -52,6 +67,8 @@ else
 		PG_BASEBACKUP_ARGS="--waldir=${POSTGRES_INITDB_WALDIR}"
 	fi
 
-    eval 'pg_basebackup --pgdata="$PGDATA" --write-recovery-conf --wal-method=stream --checkpoint=fast --dbname="${PRIMARY_DBNAME}"' "${PG_BASEBACKUP_ARGS}" || exit 1
+    eval 'pg_basebackup --pgdata="$PGDATA" --write-recovery-conf --wal-method=stream --checkpoint=fast --verbose --progress --dbname="${PRIMARY_DBNAME}"' "${PG_BASEBACKUP_ARGS}" || exit 1
+
+    docker_temp_server_start
      
 fi
