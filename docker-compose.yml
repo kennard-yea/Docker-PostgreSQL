@@ -17,14 +17,14 @@ services:
             - type: volume
               source: pgadmin-vol
               target: /var/lib/pgadmin
-    db1:
-        image: internal/db1
+    pgbench-primary:
+        image: internal/primary-db-cluster
         env_file:
-            - db1/db1.env
+            - primary-db-cluster/pgbench-primary.env
         networks:
             db-net:
                 aliases:
-                    - pgdb1
+                    - pgbench-primary-1
         ports:
             - target: 5432
               published: 54321
@@ -32,32 +32,24 @@ services:
               mode: host
         volumes:
             - type: volume
-              source: db1-data-vol-v13
+              source: pgbench-primary-pg14-volume
               target: /var/lib/postgresql/data
-            - type: volume
-              source: db1-log-vol
-              target: /var/log/postgresql
-    db2:
-        image: internal/db2
+    pgbench-replica:
+        image: internal/replica-db-cluster
         env_file:
-            - db2/db2.env
+            - replica-db-cluster/pgbench-replica.env
         depends_on:
-            - db1
-        networks:
-            db-net:
-                aliases:
-                    - pgdb2
+            - pgbench-primary
         volumes:
             - type: volume
-              source: db2-data-vol-v13
+              source: pgbench-replica-pg14-volume
               target: /var/lib/postgresql/data
-            - type: volume
-              source: db2-log-vol
-              target: /var/log/postgresql
+        networks:
+            db-net:
     pgagent-db1:
         image: internal/pgagent
         environment:
-            PGHOST: pgdb1
+            PGHOST: pgbench-primary-1
         networks:
             db-net:
                 aliases:
@@ -76,10 +68,9 @@ services:
 
 
 volumes:
-    db1-data-vol-v13:
-    db1-log-vol:
-    db2-data-vol-v13:
-    db2-log-vol:
+    pgbench-primary-pg14-volume:
+    pgbench-replica-pg14-volume:
+        name: 'pgbench-replica-pg14-volume_{{.Task.Slot}}'
     pgadmin-vol:
 networks:
     db-net:
