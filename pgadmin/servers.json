@@ -1,9 +1,9 @@
 {
     "Servers": {
         "1": {
-            "Name": "postgres@pgbench-primary-1",
+            "Name": "postgres@pgbench-primary",
             "Group": "Servers",
-            "Host": "pgbench-primary-1",
+            "Host": "pgbench-primary",
             "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "postgres",
@@ -18,9 +18,9 @@
             "TunnelAuthentication": 0
         },
         "2": {
-            "Name": "pgbench@pgbench-primary-1",
+            "Name": "pgbench@pgbench-primary",
             "Group": "Servers",
-            "Host": "pgbench-primary-1",
+            "Host": "pgbench-primary",
             "Port": 5432,
             "MaintenanceDB": "pgbench",
             "Username": "pgbench",
@@ -35,9 +35,9 @@
             "TunnelAuthentication": 0
         },
         "3": {
-            "Name": "grafana@pgbench-primary-1",
+            "Name": "grafana@pgbench-primary",
             "Group": "Servers",
-            "Host": "pgbench-primary-1",
+            "Host": "pgbench-primary",
             "Port": 5432,
             "MaintenanceDB": "grafana",
             "Username": "grafana",

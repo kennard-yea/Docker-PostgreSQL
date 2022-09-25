@@ -24,7 +24,7 @@ services:
         networks:
             db-net:
                 aliases:
-                    - pgbench-primary-1
+                    - pgbench-primary
         ports:
             - target: 5432
               published: 54321
@@ -46,10 +46,12 @@ services:
               target: /var/lib/postgresql/data
         networks:
             db-net:
+                aliases:
+                    - pgbench-replica
     pgagent-db1:
         image: internal/pgagent
         environment:
-            PGHOST: pgbench-primary-1
+            PGHOST: pgbench-primary
         networks:
             db-net:
                 aliases:
