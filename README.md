@@ -8,7 +8,9 @@ Personal playground using Docker, primarily for playing with PostgreSQL scripts 
 
 Create the below files and populate them with the appropriate contents
 
-```shell
+##### Powershell
+
+```powershell
 $postgres_pass="********"
 $pgbench_pass="********"
 $grafana_pass="********"
@@ -18,7 +20,7 @@ $pgadmin_pass="********"
 echo "POSTGRES_PASSWORD=$postgres_pass
 POSTGRES_USER=postgres
 POSTGRES_DB=postgres
-PGDATA=/var/lib/postgresql/data
+PGDATA=/var/lib/postgresql/data/14
 PGPORT=5432
 PGBENCH_PASSWORD=$pgbench_pass
 PGBENCH_USER=pgbench
@@ -26,14 +28,11 @@ PGBENCH_DB=pgbench
 PGBENCH_SCALE=10
 GRAFANA_USER=grafana
 GRAFANA_PASSWORD=$grafana_pass
-" > ./db1/db1.env
+" > primary-db-cluster/pgbench-primary.env
 
-echo "POSTGRES_USER=postgres
-POSTGRES_DB=postgres
-PGDATA=/var/lib/postgresql/data
-PGPORT=5432
-POSTGRES_PRIMARY_HOST=pgdb1
-" > ./db2/db2.env
+echo "PRIMARY_DBNAME=host=pgbench-primary
+PGDATA=/var/lib/postgresql/data/14
+" > replica-db-cluster/pgbench-replica.env
 
 echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
 PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
@@ -49,6 +48,45 @@ cp ./db1/.pgpass ./db2/.pgpass
 cp ./db1/.pgpass ./pgadmin/.pgpass
 cp ./db1/.pgpass ./pgagent/.pgpass
 cp ./db1/.pgpass ./pgmetrics/.pgpass
+```
+
+#### Bash
+
+```bash
+postgres_pass="********"
+pgbench_pass="********"
+grafana_pass="********"
+pgadmin_email="********"
+pgadmin_pass="********"
+
+echo "POSTGRES_PASSWORD=$postgres_pass
+POSTGRES_USER=postgres
+POSTGRES_DB=postgres
+PGDATA=/var/lib/postgresql/data/14
+PGPORT=5432
+PGBENCH_PASSWORD=$pgbench_pass
+PGBENCH_USER=pgbench
+PGBENCH_DB=pgbench
+PGBENCH_SCALE=10
+GRAFANA_USER=grafana
+GRAFANA_PASSWORD=$grafana_pass
+" > primary-db-cluster/pgbench-primary.env && chmod 0600 primary-db-cluster/pgbench-primary.env
+
+echo "PRIMARY_DBNAME=host=pgbench-primary
+PGDATA=/var/lib/postgresql/data/14
+" > replica-db-cluster/pgbench-replica.env && chmod 0600 replica-db-cluster/pgbench-replica.env
+
+echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
+PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
+PGPASSFILE=/var/lib/pgadmin/storage/${pgadmin_email//\@/\_}/.pgpass" > pgadmin/pgadmin.env && chmod 0600 pgadmin/pgadmin.env
+
+echo "*:*:*:postgres:${postgres_pass}
+> *:*:*:pgbench:${pgbench_pass}
+> *:*:*:grafana:${grafana_pass}" > primary-db-cluster/.pgpass && chmod 600 primary-db-cluster/.pgpass
+cp primary-db-cluster/.pgpass replica-db-cluster/
+cp primary-db-cluster/.pgpass pgadmin/
+cp primary-db-cluster/.pgpass pgagent/
+cp primary-db-cluster/.pgpass pgmetrics/
 ```
 
 ### Create stack (requires building db1 image then deploying stack)
