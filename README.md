@@ -74,6 +74,7 @@ GRAFANA_PASSWORD=$grafana_pass
 
 echo "PRIMARY_DBNAME=host=pgbench-primary
 PGDATA=/var/lib/postgresql/data/14
+POSTGRES_PASSWORD=$postgres_pass
 " > replica-db-cluster/pgbench-replica.env && chmod 0600 replica-db-cluster/pgbench-replica.env
 
 echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
