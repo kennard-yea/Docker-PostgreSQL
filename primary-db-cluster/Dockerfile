@@ -1,4 +1,4 @@
-FROM    postgres:14
+FROM    postgres:15
 USER    postgres
 COPY    --chown=postgres:postgres   tmp/get_pg_stats_functions.sql                       /tmp/
 COPY    --chown=postgres:postgres   pg_etc/pg_hba.conf                                   /tmp/
