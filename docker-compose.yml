@@ -48,14 +48,6 @@ services:
             db-net:
                 aliases:
                     - pgbench-replica
-    pgagent-db1:
-        image: internal/pgagent
-        environment:
-            PGHOST: pgbench-primary
-        networks:
-            db-net:
-                aliases:
-                  - pgagent-db1
     grafana:
         image: grafana/grafana:main
         networks:
