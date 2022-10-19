@@ -396,25 +396,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 8 (class 2615 OID 16562)
--- Name: pgagent; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA pgagent;
-
-
-ALTER SCHEMA pgagent OWNER TO postgres;
-
---
--- TOC entry 3446 (class 0 OID 0)
--- Dependencies: 8
--- Name: SCHEMA pgagent; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON SCHEMA pgagent IS 'pgAgent system tables';
-
-
---
 -- TOC entry 2 (class 3079 OID 16563)
 -- Name: pg_buffercache; Type: EXTENSION; Schema: -; Owner: -
 --
@@ -429,23 +410,6 @@ CREATE EXTENSION IF NOT EXISTS pg_buffercache WITH SCHEMA public;
 --
 
 COMMENT ON EXTENSION pg_buffercache IS 'examine the shared buffer cache';
-
-
---
--- TOC entry 3 (class 3079 OID 16569)
--- Name: pgagent; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pgagent WITH SCHEMA pgagent;
-
-
---
--- TOC entry 3448 (class 0 OID 0)
--- Dependencies: 3
--- Name: EXTENSION pgagent; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pgagent IS 'A PostgreSQL job scheduler';
 
 
 --
