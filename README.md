@@ -53,11 +53,11 @@ cp ./db1/.pgpass ./pgmetrics/.pgpass
 #### Bash
 
 ```bash
-postgres_pass="********"
-pgbench_pass="********"
-grafana_pass="********"
+postgres_pass="$(cat /proc/sys/kernel/random/uuid)"
+pgbench_pass="$(cat /proc/sys/kernel/random/uuid)"
+grafana_pass="$(cat /proc/sys/kernel/random/uuid)"
 pgadmin_email="********"
-pgadmin_pass="********"
+pgadmin_pass="$(cat /proc/sys/kernel/random/uuid)"
 
 echo "POSTGRES_PASSWORD=$postgres_pass
 POSTGRES_USER=postgres
@@ -82,8 +82,8 @@ PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
 PGPASSFILE=/var/lib/pgadmin/storage/${pgadmin_email//\@/\_}/.pgpass" > pgadmin/pgadmin.env && chmod 0600 pgadmin/pgadmin.env
 
 echo "*:*:*:postgres:${postgres_pass}
-> *:*:*:pgbench:${pgbench_pass}
-> *:*:*:grafana:${grafana_pass}" > primary-db-cluster/.pgpass && chmod 600 primary-db-cluster/.pgpass
+*:*:*:pgbench:${pgbench_pass}
+*:*:*:grafana:${grafana_pass}" > primary-db-cluster/.pgpass && chmod 600 primary-db-cluster/.pgpass
 cp primary-db-cluster/.pgpass replica-db-cluster/
 cp primary-db-cluster/.pgpass pgadmin/
 cp primary-db-cluster/.pgpass pgagent/
