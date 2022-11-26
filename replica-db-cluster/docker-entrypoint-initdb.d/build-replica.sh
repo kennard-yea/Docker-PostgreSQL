@@ -55,9 +55,9 @@ else
     docker_temp_server_stop
     rm -rf $PGDATA
 
-    if [ ! -r "$HOME/.pgpass" ]; then
-        new_pgpass
-    fi
+    # if [ ! -r "$HOME/.pgpass" ]; then
+    #     new_pgpass
+    # fi
 
     echo "Giving the primary time to initialize..."
     sleep 60

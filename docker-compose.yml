@@ -18,7 +18,7 @@ services:
               source: pgadmin-vol
               target: /var/lib/pgadmin
     pgbench-primary:
-        image: internal/primary-db-cluster
+        image: postgres:15
         env_file:
             - primary-db-cluster/pgbench-primary.env
         networks:
@@ -32,18 +32,40 @@ services:
               mode: host
         volumes:
             - type: volume
-              source: pgbench-primary-pg14-volume
+              source: pgbench-primary-volume
               target: /var/lib/postgresql/data
+            - type: bind
+              source: primary-db-cluster/etc/postgresql/15/
+              target: /etc/postgresql/15/
+              read_only: true
+            - type: bind
+              source: primary-db-cluster/docker-entrypoint-initdb.d/
+              target: /docker-entrypoint-initdb.d/
+            - type: bind
+              source: primary-db-cluster/tmp/
+              target: /tmp/
+        command: ["postgres","-c","config_file=/etc/postgresql/15/postgresql.conf"]
     pgbench-replica:
-        image: internal/replica-db-cluster
+        image: postgres:15
         env_file:
             - replica-db-cluster/pgbench-replica.env
-        depends_on:
-            - pgbench-primary
+        deploy:
+            restart_policy:
+                condition: on-failure
+                max_attempts: 3
+                window: 120s
         volumes:
             - type: volume
-              source: pgbench-replica-pg14-volume
+              source: pgbench-replica-volume
               target: /var/lib/postgresql/data
+            - type: bind
+              source: replica-db-cluster/etc/postgresql/15
+              target: /etc/postgresql/15/
+              read_only: true
+            - type: bind
+              source: replica-db-cluster/docker-entrypoint-initdb.d/
+              target: /docker-entrypoint-initdb.d/
+        command: ["postgres","-c","config_file=/etc/postgresql/15/postgresql.conf"]
         networks:
             db-net:
                 aliases:
@@ -62,9 +84,9 @@ services:
 
 
 volumes:
-    pgbench-primary-pg14-volume:
-    pgbench-replica-pg14-volume:
-        name: 'pgbench-replica-pg14-volume_{{.Task.Slot}}'
+    pgbench-primary-volume:
+    pgbench-replica-volume:
+        name: 'pgbench-replica-volume_{{.Task.Slot}}'
     pgadmin-vol:
 networks:
     db-net:
