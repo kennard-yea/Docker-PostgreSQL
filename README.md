@@ -11,43 +11,36 @@ Create the below files and populate them with the appropriate contents
 ##### Powershell
 
 ```powershell
-$postgres_pass="********"
-$pgbench_pass="********"
-$grafana_pass="********"
+$postgres_pass="[guid]::NewGuid().ToString()"
+$pgbench_pass="[guid]::NewGuid().ToString()"
+$grafana_pass="[guid]::NewGuid().ToString()"
 $pgadmin_email="********"
-$pgadmin_pass="********"
+$pgadmin_pass="[guid]::NewGuid().ToString()"
 
 echo "POSTGRES_PASSWORD=$postgres_pass
 POSTGRES_USER=postgres
 POSTGRES_DB=postgres
-PGDATA=/var/lib/postgresql/data/14
+PGDATA=/var/lib/postgresql/data/15
 PGPORT=5432
 PGBENCH_PASSWORD=$pgbench_pass
 PGBENCH_USER=pgbench
-PGBENCH_DB=pgbench
-PGBENCH_SCALE=10
 GRAFANA_USER=grafana
 GRAFANA_PASSWORD=$grafana_pass
 " > primary-db-cluster/pgbench-primary.env
 
 echo "PRIMARY_DBNAME=host=pgbench-primary
-PGDATA=/var/lib/postgresql/data/14
+PGDATA=/var/lib/postgresql/data/15
 " > replica-db-cluster/pgbench-replica.env
 
 echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
 PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
 PGPASSFILE=/var/lib/pgadmin/storage/$($pgadmin_email.Replace('@','_'))/.pgpass" > ./pgadmin/pgadmin.env
 
-echo "pgdb1:5432:*:postgres:$postgres_pass
-pgdb2:5432:*:postgres:$postgres_pass
-pgdb1:5432:*:pgbench:$pgbench_pass
-pgdb2:5432:*:pgbench:$pgbench_pass
-pgdb1:5432:*:grafana:$grafana_pass
-pgdb2:5432:*:grafana:$grafana_pass" > ./db1/.pgpass
-cp ./db1/.pgpass ./db2/.pgpass
+echo "*:5432:*:postgres:$postgres_pass
+*:5432:*:pgbench:$pgbench_pass
+*:5432:*:grafana:$grafana_pass" > ./primary-db-cluster/.pgpass
+cp ./db1/.pgpass ./replica-db-cluster/.pgpass
 cp ./db1/.pgpass ./pgadmin/.pgpass
-cp ./db1/.pgpass ./pgagent/.pgpass
-cp ./db1/.pgpass ./pgmetrics/.pgpass
 ```
 
 #### Bash
