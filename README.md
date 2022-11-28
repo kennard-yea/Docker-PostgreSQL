@@ -39,8 +39,8 @@ PGPASSFILE=/var/lib/pgadmin/storage/$($pgadmin_email.Replace('@','_'))/.pgpass" 
 echo "*:5432:*:postgres:$postgres_pass
 *:5432:*:pgbench:$pgbench_pass
 *:5432:*:grafana:$grafana_pass" > ./primary-db-cluster/.pgpass
-cp ./db1/.pgpass ./replica-db-cluster/.pgpass
-cp ./db1/.pgpass ./pgadmin/.pgpass
+cp ./primary-db-cluster/.pgpass ./replica-db-cluster/.pgpass
+cp ./primary-db-cluster/.pgpass ./pgadmin/.pgpass
 ```
 
 #### Bash
