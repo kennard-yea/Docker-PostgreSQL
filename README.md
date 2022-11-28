@@ -11,11 +11,11 @@ Create the below files and populate them with the appropriate contents
 ##### Powershell
 
 ```powershell
-$postgres_pass="[guid]::NewGuid().ToString()"
-$pgbench_pass="[guid]::NewGuid().ToString()"
-$grafana_pass="[guid]::NewGuid().ToString()"
-$pgadmin_email="********"
-$pgadmin_pass="[guid]::NewGuid().ToString()"
+$postgres_pass=[guid]::NewGuid().ToString()
+$pgbench_pass=[guid]::NewGuid().ToString()
+$grafana_pass=[guid]::NewGuid().ToString()
+$pgadmin_email="chrismdollinger@gmail.com"
+$pgadmin_pass=[guid]::NewGuid().ToString()
 
 echo "POSTGRES_PASSWORD=$postgres_pass
 POSTGRES_USER=postgres
