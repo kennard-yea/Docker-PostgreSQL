@@ -11,68 +11,67 @@ Create the below files and populate them with the appropriate contents
 ##### Powershell
 
 ```powershell
-$postgres_pass=[guid]::NewGuid().ToString()
-$pgbench_pass=[guid]::NewGuid().ToString()
-$grafana_pass=[guid]::NewGuid().ToString()
-$pgadmin_pgpass=[guid]::NewGuid().ToString()
+[guid]::NewGuid().ToString() > primary-db-cluster/.postgres_password
+[guid]::NewGuid().ToString() > primary-db-cluster/.pgbench_password
+[guid]::NewGuid().ToString() >  primary-db-cluster/.grafana_password
+[guid]::NewGuid().ToString() > primary-db-cluster/.pgadmin_password
+Write-Output "pgbench-primary:5432:pgadmin:pgadmin:$(Get-Content .\primary-db-cluster\.pgadmin_password)" > pgadmin/.pgadmin_pgpass
 $pgadmin_email="********"
-$pgadmin_pass=[guid]::NewGuid().ToString()
+[guid]::NewGuid().ToString() > pgadmin/.pgadmin_default_password
 
-echo "POSTGRES_PASSWORD=$postgres_pass
-POSTGRES_USER=postgres
-POSTGRES_DB=postgres
+echo "GRAFANA_PASSWORD_FILE=/run/secrets/grafana_password
+GRAFANA_USER=grafana
+PGADMIN_PASSWORD_FILE=/run/secrets/pgadmin_password
+PGADMIN_USER=pgadmin
+PGBENCH_PASSWORD_FILE=/run/secrets/pgbench_password
+PGBENCH_USER=pgbench
 PGDATA=/var/lib/postgresql/data/15
 PGPORT=5432
-PGBENCH_PASSWORD=$pgbench_pass
-PGBENCH_USER=pgbench
-GRAFANA_USER=grafana
-GRAFANA_PASSWORD=$grafana_pass
-PGADMIN_USER=pgadmin
-PGADMIN_PASSWORD=$pgadmin_pgpass
-" > primary-db-cluster/pgbench-primary.env
+POSTGRES_DB=postgres
+POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+POSTGRES_USER=postgres" > primary-db-cluster/pgbench-primary.env
 
-echo "PRIMARY_DBNAME=host=pgbench-primary
-PGDATA=/var/lib/postgresql/data/15
-" > replica-db-cluster/pgbench-replica.env
+echo "PGDATA=/var/lib/postgresql/data/15
+POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+PRIMARY_DBNAME=host=pgbench-primary" > replica-db-cluster/pgbench-replica.env
 
-echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
-PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
-PGADMIN_CONFIG_CONFIG_DATABASE_URI='postgresql://pgadmin:$pgadmin_pgpass@pgbench-primary:5432/pgadmin?options=-csearch_path=pgadmin'" > ./pgadmin/pgadmin.env
+echo "PGADMIN_CONFIG_CONFIG_DATABASE_URI='postgresql://pgadmin@pgbench-primary:5432/pgadmin?options=-csearch_path=pgadmin'
+PGADMIN_DEFAULT_EMAIL=$pgadmin_email
+PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_default_password
+PGPASSFILE=/run/secrets/pgadmin_pgpass" > ./pgadmin/pgadmin.env
 ```
 
 #### Bash
 
 ```bash
-postgres_pass="$(cat /proc/sys/kernel/random/uuid)"
-pgbench_pass="$(cat /proc/sys/kernel/random/uuid)"
-grafana_pass="$(cat /proc/sys/kernel/random/uuid)"
-pgadmin_pgpass="$(cat /proc/sys/kernel/random/uuid)"
+cat /proc/sys/kernel/random/uuid > primary-db-cluster/.postgres_password && chmod 0400 primary-db-cluster/.postgres_password
+cat /proc/sys/kernel/random/uuid > primary-db-cluster/.pgbench_password && chmod 0400 primary-db-cluster/.pgbench_password
+cat /proc/sys/kernel/random/uuid > primary-db-cluster/.grafana_password && chmod 0400 primary-db-cluster/.grafana_password
+cat /proc/sys/kernel/random/uuid > primary-db-cluster/.pgadmin_password && chmod 0400 primary-db-cluster/.pgadmin_password
+echo "pgbench-primary:5432:pgadmin:pgadmin:$(cat .\primary-db-cluster\.pgadmin_password)" > pgadmin/.pgadmin_pgpass && chmod 0400 pgadmin/.pgadmin_pgpass
 pgadmin_email="********"
-pgadmin_pass="$(cat /proc/sys/kernel/random/uuid)"
+cat /proc/sys/kernel/random/uuid > pgadmin/.pgadmin_default_password && chmod 0400 pgadmin/.pgadmin_default_password
 
-echo "POSTGRES_PASSWORD=$postgres_pass
-POSTGRES_USER=postgres
-POSTGRES_DB=postgres
+echo "GRAFANA_PASSWORD_FILE=/run/secrets/grafana_password
+GRAFANA_USER=grafana
+PGADMIN_PASSWORD_FILE=/run/secrets/pgadmin_password
+PGADMIN_USER=pgadmin
+PGBENCH_PASSWORD_FILE=/run/secrets/pgbench_password
+PGBENCH_USER=pgbench
 PGDATA=/var/lib/postgresql/data/15
 PGPORT=5432
-PGBENCH_PASSWORD=$pgbench_pass
-PGBENCH_USER=pgbench
-PGBENCH_DB=pgbench
-PGBENCH_SCALE=10
-GRAFANA_USER=grafana
-GRAFANA_PASSWORD=$grafana_pass
-PGADMIN_USER=pgadmin
-PGADMIN_PASSWORD=$pgadmin_pgpass
-" > primary-db-cluster/pgbench-primary.env && chmod 0600 primary-db-cluster/pgbench-primary.env
+POSTGRES_DB=postgres
+POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+POSTGRES_USER=postgres" > primary-db-cluster/pgbench-primary.env
 
-echo "PRIMARY_DBNAME=host=pgbench-primary
-PGDATA=/var/lib/postgresql/data/15
-POSTGRES_PASSWORD=$postgres_pass
-" > replica-db-cluster/pgbench-replica.env && chmod 0600 replica-db-cluster/pgbench-replica.env
+echo "PGDATA=/var/lib/postgresql/data/15
+POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+PRIMARY_DBNAME=host=pgbench-primary" > replica-db-cluster/pgbench-replica.env
 
-echo "PGADMIN_DEFAULT_EMAIL=$pgadmin_email
-PGADMIN_DEFAULT_PASSWORD=$pgadmin_pass
-PGADMIN_CONFIG_CONFIG_DATABASE_URI='postgresql://pgadmin:$pgadmin_pgpass@pgbench-primary:5432/pgadmin?options=-csearch_path=pgadmin'" > pgadmin/pgadmin.env && chmod 0600 pgadmin/pgadmin.env
+echo "PGADMIN_CONFIG_CONFIG_DATABASE_URI='postgresql://pgadmin@pgbench-primary:5432/pgadmin?options=-csearch_path=pgadmin'
+PGADMIN_DEFAULT_EMAIL=$pgadmin_email
+PGADMIN_DEFAULT_PASSWORD_FILE=/run/secrets/pgadmin_default_password
+PGPASSFILE=/run/secrets/pgadmin_pgpass" > ./pgadmin/pgadmin.env
 ```
 
 ### Create stack

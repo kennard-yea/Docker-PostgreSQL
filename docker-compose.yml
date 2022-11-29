@@ -20,6 +20,17 @@ services:
             - type: bind
               source: pgadmin/pgadmin4/servers.json
               target: /pgadmin4/servers.json
+        secrets:
+            - source: pgadmin_default_password
+              target: /run/secrets/pgadmin_default_password
+              uid: "5050"
+              gid: "0"
+              mode: 0400
+            - source: pgadmin_pgpass
+              target: /run/secrets/pgadmin_pgpass
+              uid: "5050"
+              gid: "0"
+              mode: 0400
     pgbench-primary:
         image: postgres:15
         env_file:
@@ -47,6 +58,27 @@ services:
             - type: bind
               source: primary-db-cluster/tmp/
               target: /tmp/
+        secrets:
+            - source: grafana_password
+              target: /run/secrets/grafana_password
+              uid: "999"
+              gid: "999"
+              mode: 0400
+            - source: pgadmin_password
+              target: /run/secrets/pgadmin_password
+              uid: "999"
+              gid: "999"
+              mode: 0400
+            - source: pgbench_password
+              target: /run/secrets/pgbench_password
+              uid: "999"
+              gid: "999"
+              mode: 0400
+            - source: postgres_password
+              target: /run/secrets/postgres_password
+              uid: "999"
+              gid: "999"
+              mode: 0400
         command: ["postgres","-c","config_file=/etc/postgresql/15/postgresql.conf"]
     pgbench-replica:
         image: postgres:15
@@ -68,6 +100,12 @@ services:
             - type: bind
               source: replica-db-cluster/docker-entrypoint-initdb.d/
               target: /docker-entrypoint-initdb.d/
+        secrets:
+            - source: postgres_password
+              target: /run/secrets/postgres_password
+              uid: "999"
+              gid: "999"
+              mode: 0400
         command: ["postgres","-c","config_file=/etc/postgresql/15/postgresql.conf"]
         networks:
             db-net:
@@ -85,7 +123,19 @@ services:
               protocol: tcp
               mode: host
 
-
+secrets:
+    pgadmin_default_password:
+        file: pgadmin/.pgadmin_default_password
+    pgadmin_pgpass:
+        file: pgadmin/.pgadmin_pgpass
+    grafana_password:
+        file: primary-db-cluster/.grafana_password
+    pgadmin_password:
+        file: primary-db-cluster/.pgadmin_password
+    pgbench_password:
+        file: primary-db-cluster/.pgbench_password
+    postgres_password:
+        file: primary-db-cluster/.postgres_password
 volumes:
     pgbench-primary-volume:
     pgbench-replica-volume:

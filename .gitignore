@@ -2,6 +2,9 @@
 .pgpass
 .postgres_password
 .pgbench_password
+.pgadmin_default_password
+.pgadmin_password
+.pgadmin_pgpass
 *.env
 .grafana_password
 *.code-workspace
