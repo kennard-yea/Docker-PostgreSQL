@@ -1,7 +1,7 @@
 version: "3.9"
 services:
     pgadmin:
-        image: internal/pgadmin
+        image: dpage/pgadmin4:latest
         env_file:
             - pgadmin/pgadmin.env
         networks:
@@ -17,6 +17,9 @@ services:
             - type: volume
               source: pgadmin-vol
               target: /var/lib/pgadmin
+            - type: bind
+              source: pgadmin/pgadmin4/servers.json
+              target: /pgadmin4/servers.json
     pgbench-primary:
         image: postgres:15
         env_file:
