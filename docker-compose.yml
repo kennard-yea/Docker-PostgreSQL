@@ -39,11 +39,6 @@ services:
             db-net:
                 aliases:
                     - pgbench-primary
-        ports:
-            - target: 5432
-              published: 54321
-              protocol: tcp
-              mode: host
         volumes:
             - type: volume
               source: pgbench-primary-volume
