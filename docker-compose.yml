@@ -30,7 +30,7 @@ services:
         target: /run/secrets/pgadmin_pgpass
         uid: "5050"
         gid: "0"
-        mode: 400
+        mode: 0600
   pgbench-primary:
     image: postgres:15
     env_file:
@@ -150,3 +150,4 @@ networks:
   db-net:
     driver: overlay
     attachable: true
+    name: db-net
