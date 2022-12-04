@@ -1,11 +1,6 @@
 .gitconfig
-.pgpass
-.postgres_password
-.pgbench_password
-.pgadmin_default_password
-.pgadmin_password
-.pgadmin_pgpass
+.*pgpass
+.*_password
 *.env
-.grafana_password
 *.code-workspace
 .vscode/*
