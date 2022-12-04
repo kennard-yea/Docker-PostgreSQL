@@ -29,9 +29,11 @@ function init_users() {
     createuser --echo --login "$PGBENCH_USER"
     createuser --echo --login "$GRAFANA_USER"
     createuser --echo --login "$PGADMIN_USER"
+    createuser --echo --login "$BEAVER_USER"
     psql --command="ALTER USER $PGBENCH_USER PASSWORD '$PGBENCH_PASSWORD'"
     psql --command="ALTER USER $GRAFANA_USER PASSWORD '$GRAFANA_PASSWORD'"
     psql --command="ALTER USER $PGADMIN_USER PASSWORD '$PGADMIN_PASSWORD'"
+    psql --command="ALTER USER $BEAVER_USER PASSWORD '$BEAVER_PASSWORD'"
     return 0
 }
 
