@@ -17,9 +17,6 @@ services:
       - type: volume
         source: pgadmin-vol
         target: /var/lib/pgadmin
-      - type: bind
-        source: pgadmin/pgadmin4/servers.json
-        target: /pgadmin4/servers.json
     secrets:
       - source: pgadmin_default_password
         target: /run/secrets/pgadmin_default_password
@@ -71,6 +68,11 @@ services:
         mode: 400
       - source: postgres_password
         target: /run/secrets/postgres_password
+        uid: "999"
+        gid: "999"
+        mode: 400
+      - source: beaver_password
+        target: /run/secrets/beaver_password
         uid: "999"
         gid: "999"
         mode: 400
@@ -141,6 +143,8 @@ secrets:
     file: primary-db-cluster/.pgbench_password
   postgres_password:
     file: primary-db-cluster/.postgres_password
+  beaver_password:
+    file: primary-db-cluster/.beaver_password
 volumes:
   pgbench-primary-volume:
   pgbench-replica-volume:
