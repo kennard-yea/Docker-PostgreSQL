@@ -35,7 +35,7 @@ function init_users() {
     psql --command="ALTER USER $GRAFANA_USER PASSWORD '$GRAFANA_PASSWORD'"
     psql --command="ALTER USER $PGADMIN_USER PASSWORD '$PGADMIN_PASSWORD'"
     psql --command="ALTER USER $BEAVER_USER PASSWORD '$BEAVER_PASSWORD'"
-    psql --command="ALTER RUSER $ZABBIX_USER PASSWORD '$ZABBIX_PASSWORD'"
+    psql --command="ALTER USER $ZABBIX_USER PASSWORD '$ZABBIX_PASSWORD'"
     return 0
 }
 
