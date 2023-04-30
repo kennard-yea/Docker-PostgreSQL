@@ -71,16 +71,6 @@ services:
         uid: "999"
         gid: "999"
         mode: 400
-      - source: beaver_password
-        target: /run/secrets/beaver_password
-        uid: "999"
-        gid: "999"
-        mode: 400
-      - source: zabbix_password
-        target: /run/secrets/zabbix_password
-        uid: "999"
-        gid: "999"
-        mode: 400
     command:
       [
         "postgres",
@@ -148,10 +138,6 @@ secrets:
     file: primary-db-cluster/.pgbench_password
   postgres_password:
     file: primary-db-cluster/.postgres_password
-  beaver_password:
-    file: primary-db-cluster/.beaver_password
-  zabbix_password:
-    file: primary-db-cluster/.zabbix_password
 volumes:
   pgbench-primary-volume:
   pgbench-replica-volume:
