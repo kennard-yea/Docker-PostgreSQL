@@ -1,71 +1,28 @@
-version: "3.9"
+name: postgresql-multitenant
 services:
-  pgadmin:
-    image: dpage/pgadmin4:6.21
-    env_file:
-      - pgadmin/pgadmin.env
-    networks:
-      db-net:
-        aliases:
-          - pgadmin
-    ports:
-      - target: 80
-        published: 8080
-        protocol: tcp
-        mode: host
-    volumes:
-      - type: volume
-        source: pgadmin-vol
-        target: /var/lib/pgadmin
-    secrets:
-      - source: pgadmin_default_password
-        target: /run/secrets/pgadmin_default_password
-        uid: "5050"
-        gid: "0"
-        mode: 400
-      - source: pgadmin_pgpass
-        target: /run/secrets/pgadmin_pgpass
-        uid: "5050"
-        gid: "0"
-        mode: 0600
-  pgbench-primary:
+  oltp-primary:
     image: postgres:15
     env_file:
-      - primary-db-cluster/pgbench-primary.env
+      - oltp-cluster/etc/oltp-primary.env
     networks:
-      db-net:
+      database-network:
         aliases:
-          - pgbench-primary
+          - oltp-primary
     volumes:
       - type: volume
-        source: pgbench-primary-volume
+        source: oltp-primary-volume
         target: /var/lib/postgresql/data
       - type: bind
-        source: primary-db-cluster/etc/postgresql/15/
+        source: oltp-cluster/etc/postgresql/15/
         target: /etc/postgresql/15/
         read_only: true
       - type: bind
-        source: primary-db-cluster/docker-entrypoint-initdb.d/
+        source: oltp-cluster/primary/docker-entrypoint-initdb.d/
         target: /docker-entrypoint-initdb.d/
       - type: bind
-        source: primary-db-cluster/tmp/
+        source: oltp-cluster/primary/tmp/
         target: /tmp/
     secrets:
-      - source: grafana_password
-        target: /run/secrets/grafana_password
-        uid: "999"
-        gid: "999"
-        mode: 400
-      - source: pgadmin_password
-        target: /run/secrets/pgadmin_password
-        uid: "999"
-        gid: "999"
-        mode: 400
-      - source: pgbench_password
-        target: /run/secrets/pgbench_password
-        uid: "999"
-        gid: "999"
-        mode: 400
       - source: postgres_password
         target: /run/secrets/postgres_password
         uid: "999"
@@ -77,10 +34,10 @@ services:
         "-c",
         "config_file=/etc/postgresql/15/postgresql.conf"
       ]
-  pgbench-replica:
+  oltp-replica:
     image: postgres:15
     env_file:
-      - replica-db-cluster/pgbench-replica.env
+      - oltp-cluster/etc/oltp-replica.env
     deploy:
       restart_policy:
         condition: on-failure
@@ -88,14 +45,14 @@ services:
         window: 120s
     volumes:
       - type: volume
-        source: pgbench-replica-volume
+        source: oltp-replica-volume
         target: /var/lib/postgresql/data
       - type: bind
-        source: replica-db-cluster/etc/postgresql/15
+        source: oltp-cluster/etc/postgresql/15
         target: /etc/postgresql/15/
         read_only: true
       - type: bind
-        source: replica-db-cluster/docker-entrypoint-initdb.d/
+        source: oltp-cluster/replica/docker-entrypoint-initdb.d/
         target: /docker-entrypoint-initdb.d/
     secrets:
       - source: postgres_password
@@ -103,6 +60,11 @@ services:
         uid: "999"
         gid: "999"
         mode: 400
+      - source: replication_pgpass
+        target: /run/secrets/replication_pgpass
+        uid: "999"
+        gid: "999"
+        mode: 600
     command:
       [
         "postgres",
@@ -110,41 +72,20 @@ services:
         "config_file=/etc/postgresql/15/postgresql.conf"
       ]
     networks:
-      db-net:
+      database-network:
         aliases:
-          - pgbench-replica
-  grafana:
-    image: grafana/grafana:main
-    networks:
-      db-net:
-        aliases:
-          - grafana
-    ports:
-      - target: 3000
-        published: 3000
-        protocol: tcp
-        mode: host
+          - oltp-replica
 
 secrets:
-  pgadmin_default_password:
-    file: pgadmin/.pgadmin_default_password
-  pgadmin_pgpass:
-    file: pgadmin/.pgadmin_pgpass
-  grafana_password:
-    file: primary-db-cluster/.grafana_password
-  pgadmin_password:
-    file: primary-db-cluster/.pgadmin_password
-  pgbench_password:
-    file: primary-db-cluster/.pgbench_password
   postgres_password:
-    file: primary-db-cluster/.postgres_password
+    file: oltp-cluster/.postgres_password
+  replication_pgpass:
+    file: oltp-cluster/replica/.replication_pgpass
 volumes:
-  pgbench-primary-volume:
-  pgbench-replica-volume:
-    name: 'pgbench-replica-volume_{{.Task.Slot}}'
-  pgadmin-vol:
+  oltp-primary-volume:
+  oltp-replica-volume:
 networks:
-  db-net:
+  database-network:
     driver: overlay
     attachable: true
-    name: db-net
+    name: database-network
