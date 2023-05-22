@@ -38,6 +38,8 @@ services:
         uid: "999"
         gid: "999"
         mode: 400
+    ports:
+      - 5432:5432
   oltp-replica:
     <<: *postgresql
     env_file:
