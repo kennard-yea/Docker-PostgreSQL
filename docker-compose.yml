@@ -81,6 +81,5 @@ volumes:
   oltp-replica-volume:
 networks:
   database-network:
-    driver: overlay
     attachable: true
     name: database-network

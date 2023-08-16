@@ -11,17 +11,17 @@ Create the below files and populate them with the appropriate contents
 ##### Powershell
 
 ```powershell
-[guid]::NewGuid().ToString() > database-primary/.postgres_password
+[guid]::NewGuid().ToString() > oltp-cluster/.postgres_password
 
 echo "PGDATA=/var/lib/postgresql/data/15
 PGPORT=5432
 POSTGRES_DB=postgres
 POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-POSTGRES_USER=postgres" > primary-db-cluster/oltp-primary.env
+POSTGRES_USER=postgres" > oltp-cluster/etc/oltp-primary.env
 
 echo "PGDATA=/var/lib/postgresql/data/15
 POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-PRIMARY_DBNAME=host=oltp-primary" > database-replica/oltp-replica.env
+PRIMARY_DBNAME=host=oltp-primary" > oltp-cluster/etc/oltp-replica.env
 
 Write-Output "oltp-primary:5432:*:postgres:$(Get-Content .\oltp-cluster\.postgres_password)" > oltp-cluster/replica/.replication_pgpass
 ```
