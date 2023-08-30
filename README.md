@@ -39,7 +39,8 @@ POSTGRES_USER=postgres" > primary-db-cluster/pgbench-primary.env
 
 echo "PGDATA=/var/lib/postgresql/data/15
 POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-PRIMARY_DBNAME=host=pgbench-primary" > replica-db-cluster/pgbench-replica.env
+PRIMARY_DBNAME=host=pgbench-primary
+PGPASS=/run/secrets/replication_pgpass" > replica-db-cluster/pgbench-replica.env
 ```
 
 ### Create stack
