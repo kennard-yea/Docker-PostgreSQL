@@ -1,17 +1,12 @@
-name: postgresql-multitenant
-
-x-postgresql: &postgresql
-  image: postgres:15
-  command:
-    [
-      "postgres",
-      "-c",
-      "config_file=/etc/postgresql/15/postgresql.conf"
-    ]
-
 services:
   oltp-primary:
-    <<: *postgresql
+    image: postgres:15
+    command:
+      [
+        "postgres",
+        "-c",
+        "config_file=/etc/postgresql/15/postgresql.conf"
+      ]
     env_file:
       - oltp-cluster/etc/oltp-primary.env
     networks:
@@ -40,45 +35,12 @@ services:
         mode: 400
     ports:
       - 5432:5432
-  oltp-replica:
-    <<: *postgresql
-    env_file:
-      - oltp-cluster/etc/oltp-replica.env
-    volumes:
-      - type: bind
-        source: oltp-cluster/etc/postgresql/15/
-        target: /etc/postgresql/15/
-        read_only: true
-      - type: volume
-        source: oltp-replica-volume
-        target: /var/lib/postgresql/data
-      - type: bind
-        source: oltp-cluster/replica/docker-entrypoint-initdb.d/
-        target: /docker-entrypoint-initdb.d/
-    secrets:
-      - source: replication_pgpass
-        target: /run/secrets/replication_pgpass
-        uid: "999"
-        gid: "999"
-        mode: 600
-      - source: postgres_password
-        target: /run/secrets/postgres_password
-        uid: "999"
-        gid: "999"
-        mode: 400
-    networks:
-      database-network:
-        aliases:
-          - oltp-replica
 
 secrets:
   postgres_password:
     file: oltp-cluster/.postgres_password
-  replication_pgpass:
-    file: oltp-cluster/replica/.replication_pgpass
 volumes:
   oltp-primary-volume:
-  oltp-replica-volume:
 networks:
   database-network:
     attachable: true
