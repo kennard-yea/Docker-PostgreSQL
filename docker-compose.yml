@@ -1,11 +1,11 @@
 services:
   oltp-primary:
-    image: postgres:15
+    image: postgres:16
     command:
       [
         "postgres",
         "-c",
-        "config_file=/etc/postgresql/15/postgresql.conf"
+        "config_file=/etc/postgresql/16/postgresql.conf"
       ]
     env_file:
       - oltp-cluster/etc/oltp-primary.env
@@ -15,8 +15,8 @@ services:
           - oltp-primary
     volumes:
       - type: bind
-        source: oltp-cluster/etc/postgresql/15/
-        target: /etc/postgresql/15/
+        source: oltp-cluster/etc/postgresql/16/
+        target: /etc/postgresql/16/
         read_only: true
       - type: volume
         source: oltp-primary-volume
